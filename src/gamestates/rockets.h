@@ -21,20 +21,25 @@
 
 struct RocketsResources {
 		ALLEGRO_FONT *font;
-        ALLEGRO_BITMAP *bg, *earth, *earth2, *cursor, *pixelator, *combined, *clouds;
-        struct Character *rocket_template, *usa_flag, *ru_flag;
+        ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *combined, *clouds;
+        struct Character *rocket_template, *usa_flag, *ru_flag, *cursor;
 
         struct Rocket {
             struct Character *character;
             float dx, dy, modifier;
-            bool blown;
+            bool blown, bumped;
             struct Rocket *next, *prev;
         } *rockets_left, *rockets_right;
 
         int counter;
         float cloud_rotation;
 
-        int cursorx, cursory;
+        struct {
+            bool top, right, left, bottom;
+        } mousemove;
+
+        ALLEGRO_SAMPLE *rocket_sample, *boom_sample, *rainbow_sample;
+        ALLEGRO_SAMPLE_INSTANCE *rocket_sound, *boom_sound, *rainbow_sound;
 
 		struct Timeline *timeline;
 };

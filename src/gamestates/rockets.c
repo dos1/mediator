@@ -33,7 +33,7 @@ struct Rocket* CreateRocket(struct Game *game, struct RocketsResources* data, st
     n->next = NULL;
     n->prev = NULL;
     n->dx = (right ? -1.5 : 1.5) + (rand() / (float)RAND_MAX) * 0.6 - 0.3;
-    n->dy = -2 + (rand() / (float)RAND_MAX) * 0.5 - 0.25;
+    n->dy = -2.1 + (rand() / (float)RAND_MAX) * 0.5 - 0.25;
     n->modifier = 0.025;
     n->blown = false;
     n->character = CreateCharacter(game, "rocket");
@@ -41,6 +41,7 @@ struct Rocket* CreateRocket(struct Game *game, struct RocketsResources* data, st
     n->character->shared = true;
     SelectSpritesheet(game, n->character, right ? "usa" : "ru");
     SetCharacterPosition(game, n->character, right ? 270 : 48, right ? 136 : 122, right ? -0.33 : 0.33);
+    al_play_sample_instance(data->rocket_sound);
 
     if (rockets) {
         struct Rocket *tmp = rockets;
@@ -55,10 +56,75 @@ struct Rocket* CreateRocket(struct Game *game, struct RocketsResources* data, st
     }
 }
 
+bool CheckCollision(struct Game *game, struct RocketsResources* data, struct Character* character1, struct Character* character2) {
+
+    bool check(int x, int y, int w, int h, int x2, int y2, int w2, int h2) {
+
+        // HACK LOL I DON'T EVEN
+        w /= character2->spritesheet->cols;
+        h /= character2->spritesheet->cols;
+        w2 /= character1->spritesheet->cols;
+        h2 /= character1->spritesheet->cols;
+
+        //if ((((x>=derpyx+0.38*derpyw+derpyo) && (x<=derpyx+0.94*derpyw+derpyo)) || ((x+w>=derpyx+0.38*derpyw+derpyo) && (x+w<=derpyx+0.94*derpyw+derpyo)) || ((x<=derpyx+0.38*derpyw+derpyo) && (x+w>=derpyx+0.94*derpyw+derpyo))) &&
+        //        (((y>=derpyy+0.26*derpyh) && (y<=derpyy+0.76*derpyh)) || ((y+h>=derpyy+0.26*derpyh) && (y+h<=derpyy+0.76*derpyh)) || ((y<=derpyy+0.26*derpyh) && (y+h>=derpyy+0.76*derpyh)))) {
+        al_draw_rectangle(x, y, x+w, y+h, al_map_rgb(255, 255, 255), 1);
+        al_draw_rectangle(x2, y2, x2+w2, y2+h2, al_map_rgb(255, 255, 255), 1);
+        if ((((x>=x2) && (x<=x2+w2)) || ((x+w>=x2) && (x+w<=x2+w2))) && (((y>=y2) && (y<=y2+h2)) || ((y+h>=y2) && (y+h<=y2+h2)))) {
+            al_draw_rectangle(x, y, x+w, y+h, al_map_rgb(255, 0, 0), 1);
+            al_draw_rectangle(x2, y2, x2+w2, y2+h2, al_map_rgb(0, 255, 0), 1);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool pointInside(int x, int y, int w, int h) {
+
+        bool value = false;
+
+        if ((character2->angle <= 1.0 && character2->angle >= 0.0) || (character2->angle < -2.0 && character2->angle > -2.6)) {
+            value = value || check(character2->x + 8, character2->y + 15, al_get_bitmap_width(character2->bitmap) - 16, al_get_bitmap_height(character2->bitmap) - 9, x, y, w, h);
+            value = value || check(character2->x + 15, character2->y + 7,  al_get_bitmap_width(character2->bitmap) - 9, al_get_bitmap_height(character2->bitmap) - 15, x, y, w, h);
+        } else if ((character2->angle >= -1.0 && character2->angle <= 0.0) || (character2->angle > 2.0 && character2->angle < 2.6)) {
+            value = value || check(character2->x + 14, character2->y + 15,  al_get_bitmap_width(character2->bitmap) - 9,al_get_bitmap_height(character2->bitmap) - 10, x, y, w, h);
+            value = value || check(character2->x + 7, character2->y + 7, al_get_bitmap_width(character2->bitmap) - 16, al_get_bitmap_height(character2->bitmap) - 16, x, y, w, h);
+        } else if ((character2->angle > 1.0 && character2->angle < 2.0) || (character2->angle < -1.0 && character2->angle > -2.0)) {
+            value = value || check(character2->x + 6, character2->y + 12, al_get_bitmap_width(character2->bitmap) + 10, al_get_bitmap_height(character2->bitmap) - 18, x, y, w, h);
+        } else {
+            value = value || check(character2->x + 13, character2->y + 5,  al_get_bitmap_width(character2->bitmap) - 18,al_get_bitmap_height(character2->bitmap) + 8, x, y, w, h);
+        }
+
+        return value;
+
+    }
+
+    bool value = false;
+
+    if (character1 == data->cursor) {
+        return pointInside(character1->x, character1->y, al_get_bitmap_width(character1->bitmap), al_get_bitmap_height(character1->bitmap));
+    }
+
+    if ((character1->angle <= 1.0 && character1->angle >= 0.0) || (character1->angle < -2.0 && character1->angle > -2.6)) {
+        value = value || pointInside(character1->x + 8, character1->y + 15, al_get_bitmap_width(character1->bitmap) - 16, al_get_bitmap_height(character1->bitmap) - 9);
+        value = value || pointInside(character1->x + 15, character1->y + 7, al_get_bitmap_width(character1->bitmap) - 9, al_get_bitmap_height(character1->bitmap) - 15);
+    } else if ((character1->angle >= -1.0 && character1->angle <= 0.0) || (character1->angle > 2.0 && character1->angle < 2.6)) {
+        value = value || pointInside(character1->x + 14, character1->y + 15, al_get_bitmap_width(character1->bitmap) - 9, al_get_bitmap_height(character1->bitmap) - 10);
+        value = value || pointInside(character1->x + 7, character1->y + 7,al_get_bitmap_width(character1->bitmap) - 16,al_get_bitmap_height(character1->bitmap) - 16);
+    } else if ((character1->angle > 1.0 && character1->angle < 2.0) || (character1->angle < -1.0 && character1->angle > -2.0)) {
+        value = value || pointInside(character1->x + 6, character1->y + 12, al_get_bitmap_width(character1->bitmap) + 10,al_get_bitmap_height(character1->bitmap) - 18);
+    } else {
+        value = value || pointInside(character1->x + 13, character1->y + 5, al_get_bitmap_width(character1->bitmap) - 18,al_get_bitmap_height(character1->bitmap) + 8);
+    }
+
+    return value;
+}
+
 void DrawRockets(struct Game *game, struct RocketsResources* data, struct Rocket* rockets) {
     struct Rocket *tmp = rockets;
     while (tmp) {
         DrawCharacter(game, tmp->character, al_map_rgb(255,255,255), 0);
+
         tmp=tmp->next;
     }
 }
@@ -67,19 +133,49 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
     struct Rocket *tmp = rockets;
     while (tmp) {
         tmp->dy+= tmp->modifier;
-        tmp->dx+= (tmp->dx > 0) ? (-tmp->modifier / 5) : (tmp->modifier / 5);
-        MoveCharacter(game, tmp->character, tmp->dx, tmp->dy, tmp->blown ? 0 : ((tmp->dx > 0) ? 0.015 : -0.015));
+        tmp->dx+= (tmp->dx > 0) ? (-tmp->modifier / 5 + 0.001) : (tmp->modifier / 5 - 0.001);
+        MoveCharacter(game, tmp->character, tmp->dx, tmp->dy, tmp->blown ? 0 : ((tmp->dx > 0) ? 0.0166 : -0.0166));
         AnimateCharacter(game, tmp->character, 1);
 
         if (!tmp->blown) {
-            if ((tmp->character->y > 140) && (rand() % 4 == 0)) {
+
+            bool dupy = false; // nice sos, sos
+
+            void iterate(struct Rocket *start) {
+                struct Rocket *tmp1 = start;
+                while (tmp1) {
+                    if ((tmp != tmp1) && (!tmp1->blown)) {
+                        if (CheckCollision(game, data, tmp->character, tmp1->character)) {
+                            dupy = true;
+
+                            tmp1->blown = true;
+                            tmp1->modifier = 0;
+                            tmp1->character->angle = 0;
+                            tmp1->dx = 0;
+                            tmp1->dy = 0;
+                            SelectSpritesheet(game, tmp1->character, "boom");
+                            MoveCharacter(game, tmp1->character, 5, 5, 0);
+                            //DrawCharacter(game, tmp->character, al_map_rgb(255,0,0), 0);
+                            al_play_sample_instance(data->boom_sound);
+                        }
+
+                    }
+                    tmp1 = tmp1->next;
+                }
+
+            }
+            iterate(data->rockets_left);
+            iterate(data->rockets_right);
+
+
+            if (((tmp->character->y > 120) && (rand() % 4 == 0) && (tmp->dy > 0)) || (dupy)) {
                 tmp->blown = true;
                 tmp->modifier = 0;
                 tmp->character->angle = 0;
                 tmp->dx = 0;
                 tmp->dy = 0;
                 SelectSpritesheet(game, tmp->character, "boom");
-                MoveCharacter(game, tmp->character, -25, -18, 0);
+                MoveCharacter(game, tmp->character, 5, 5, 0);
             }
         }
         tmp=tmp->next;
@@ -88,8 +184,8 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 
 void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
-    if (data->counter % 40 == 0) {
-        if (data->counter % 80 == 0) {
+    if (data->counter % 20 == 0) {
+        if (data->counter % 40 == 0) {
             data->rockets_left = CreateRocket(game, data, data->rockets_left, false);
         } else {
             data->rockets_right = CreateRocket(game, data, data->rockets_right, true);
@@ -101,6 +197,67 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
     AnimateCharacter(game, data->usa_flag, 1);
     AnimateCharacter(game, data->ru_flag, 1);
+
+
+    void iterate(struct Rocket *start) {
+        struct Rocket *tmp1 = start;
+        while (tmp1) {
+            if (!tmp1->blown) {
+                if (CheckCollision(game, data, data->cursor, tmp1->character)) {
+
+                    if (!tmp1->bumped) {
+                        tmp1->bumped = true;
+                        tmp1->dy = (data->mousemove.bottom * 2) - 1;
+                        tmp1->character->angle += (tmp1->character->angle < 0) ? 0.25 : -0.25;
+
+                        PrintConsole(game, "collision TOP %d rIGHT %d", data->mousemove.top, data->mousemove.right);
+
+                        int movex = 0, movey = 0;
+
+                        if (data->mousemove.right) {
+                            movex = -3;
+                        }
+                        if (data->mousemove.left) {
+                            movex = 3;
+                        }
+                        if (data->mousemove.top) {
+                            movey = 3;
+                        }
+                        if (data->mousemove.bottom) {
+                            movey =-3;
+                        }
+
+                        MoveCharacter(game, data->cursor, movex, movey, 0);
+                        al_set_mouse_xy(game->display, data->cursor->x * (al_get_display_width(game->display) / 320), data->cursor->y * (al_get_display_height(game->display) / 180));
+
+                        /*
+                        tmp1->blown = true;
+                        tmp1->modifier = 0;
+                        tmp1->character->angle = 0;
+                        tmp1->dx = 0;
+                        tmp1->dy = 0;
+                        SelectSpritesheet(game, tmp1->character, "boom");
+                        MoveCharacter(game, tmp1->character, 5, 5, 0);
+                        //DrawCharacter(game, tmp->character, al_map_rgb(255,0,0), 0);
+                        al_play_sample_instance(data->boom_sound); */
+
+                        data->mousemove.top = false;
+                        data->mousemove.bottom = false;
+                        data->mousemove.left = false;
+                        data->mousemove.right = false;
+
+                    }
+                } else {
+                    tmp1->bumped = false;
+                }
+
+            }
+            tmp1 = tmp1->next;
+        }
+
+    }
+    iterate(data->rockets_left);
+    iterate(data->rockets_right);
 
     data->counter++;
     data->cloud_rotation += 0.002;
@@ -122,7 +279,8 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
     al_draw_bitmap(data->bg, 0, 0, 0);
     al_draw_bitmap(data->earth2, 0, 0, 0);
     al_draw_bitmap(data->combined, 0, 0, 0);
-    al_draw_bitmap(data->cursor, data->cursorx, data->cursory, 0);
+
+    DrawCharacter(game, data->cursor, al_map_rgb(255,255,255), 0);
 
     DrawRockets(game, data, data->rockets_left);
     DrawRockets(game, data, data->rockets_right);
@@ -132,6 +290,9 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
 
     al_set_target_backbuffer(game->display);
     al_draw_bitmap(data->pixelator, 0, 0, 0);
+
+    //Gamestate_Logic(game, data);
+
 }
 
 void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
@@ -141,22 +302,28 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
     SetCharacterPosition(game, data->usa_flag, 266, 105, 0);
     SetCharacterPosition(game, data->ru_flag, 13, 103, 0);
 
+    SetCharacterPosition(game, data->cursor, -100, -100, 0);
+
     SelectSpritesheet(game, data->usa_flag, "usa");
     SelectSpritesheet(game, data->ru_flag, "ru");
 
+    SelectSpritesheet(game, data->cursor, "be");
+
     data->counter = 0;
     data->cloud_rotation = 0;
-
-    al_get_mouse_cursor_position(&data->cursorx, &data->cursory);
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, ALLEGRO_EVENT *ev) {
 	if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ESCAPE)) {
         SwitchGamestate(game, "rockets", "menu");
     } else if (ev->type == ALLEGRO_EVENT_MOUSE_AXES) {
-        data->cursorx = ev->mouse.x / 10;
-        data->cursory = ev->mouse.y / 10;
-        PrintConsole(game, "mouse %d %d", data->cursorx, data->cursory);
+        int mousex = ev->mouse.x / (al_get_display_width(game->display) / 320);
+        int mousey = ev->mouse.y / (al_get_display_height(game->display) / 180);
+        data->mousemove.right = mousex > data->cursor->x;
+        data->mousemove.top = mousey < data->cursor->y;
+        data->mousemove.left = mousex < data->cursor->x;
+        data->mousemove.bottom = mousey > data->cursor->y;
+        SetCharacterPosition(game, data->cursor, mousex, mousey , 0); // FIXMEEEE!
     }
 }
 
@@ -170,9 +337,20 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
     data->clouds = al_load_bitmap( GetDataFilePath(game, "rockets/clouds.png"));
 
-    data->cursor = al_create_bitmap(16, 16);
-    al_set_target_bitmap(data->cursor);
-    al_clear_to_color(al_map_rgb(0, 0, 255));
+    data->rocket_sample = al_load_sample( GetDataFilePath(game, "rockets/rocket.wav") );
+    data->boom_sample = al_load_sample( GetDataFilePath(game, "rockets/boom.wav") );
+
+    data->rocket_sound = al_create_sample_instance(data->rocket_sample);
+    al_attach_sample_instance_to_mixer(data->rocket_sound, game->audio.fx);
+    al_set_sample_instance_playmode(data->rocket_sound, ALLEGRO_PLAYMODE_ONCE);
+
+    data->boom_sound = al_create_sample_instance(data->boom_sample);
+    al_attach_sample_instance_to_mixer(data->boom_sound, game->audio.fx);
+    al_set_sample_instance_playmode(data->boom_sound, ALLEGRO_PLAYMODE_ONCE);
+
+    data->cursor = CreateCharacter(game, "cursor");
+    RegisterSpritesheet(game, data->cursor, "be");
+    LoadSpritesheets(game, data->cursor);
 
     data->pixelator = al_create_bitmap(320, 180);
     al_set_target_bitmap(data->pixelator);
@@ -212,8 +390,12 @@ void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {
     al_destroy_bitmap(data->earth2);
     al_destroy_bitmap(data->clouds);
     al_destroy_bitmap(data->combined);
-    al_destroy_bitmap(data->cursor);
     al_destroy_bitmap(data->pixelator);
+    al_destroy_sample_instance(data->rocket_sound);
+    al_destroy_sample_instance(data->boom_sound);
+    al_destroy_sample(data->rocket_sample);
+    al_destroy_sample(data->boom_sample);
+    // TODO: DestroyCharacters
 	free(data);
 }
 
