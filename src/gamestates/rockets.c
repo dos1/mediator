@@ -191,6 +191,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
                     data->flash = 4;
                     TM_AddDelay(data->timeline, 3000);
                     TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
+                    data->spawnspeed = 10;
                 }
                 if (!dupy) {
                     SelectSpritesheet(game, tmp->character, "atom");
@@ -212,8 +213,8 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 
 void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
-    if ((data->counter % 40 == 0) && (data->counter < data->timelimit)) {
-        if (data->counter % 80 == 0) {
+    if ((data->counter % data->spawnspeed == 0) && (data->counter < data->timelimit)) {
+        if (data->counter % (data->spawnspeed * 2) == 0) {
             data->rockets_left = CreateRocket(game, data, data->rockets_left, false);
         } else {
             data->rockets_right = CreateRocket(game, data, data->rockets_right, true);
@@ -378,6 +379,7 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
     data->rockets_right = NULL;
 
     data->timelimit = 500;
+    data->spawnspeed = 40;
 
     data->lost = false;
     data->won = false;
