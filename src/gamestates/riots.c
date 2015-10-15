@@ -42,6 +42,7 @@ struct Rocket* CreateRocket(struct Game *game, struct RocketsResources* data, st
     SelectSpritesheet(game, n->character, rand() % 2 ? "rock" : rand() % 2 ? "bottle" : "bottle2");
     SetCharacterPosition(game, n->character, (right ? 250 : 50) + rand() % 100 - 50, 100, right ? -0.33 : 0.33);
     al_play_sample_instance(data->jump_sound);
+    data->currentspawn = data->spawnspeed + (data->spawnspeed * 0.1) * (float)(rand() / (float)RAND_MAX * 2) - (data->spawnspeed * 0.05);
 
     if (rockets) {
         struct Rocket *tmp = rockets;
@@ -124,12 +125,13 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 
 void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
-    if ((data->counter % data->spawnspeed == 0) && ((data->counter < data->timelimit) || (data->lost))) {
-        if (data->counter % (data->spawnspeed * 2) == 0) {
+    if ((data->spawncounter == data->currentspawn) && ((data->counter < data->timelimit) || (data->lost))) {
+        if (rand() % 2 == 0) {
             data->rockets_left = CreateRocket(game, data, data->rockets_left, false);
         } else {
             data->rockets_right = CreateRocket(game, data, data->rockets_right, true);
         }
+        data->spawncounter = 0;
     }
 
     if (!data->flash) {
@@ -219,6 +221,7 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
     iterate(data->rockets_right);
 
     data->counter++;
+    data->spawncounter++;
     data->cloud_rotation += 0.002;
 
     TM_Process(data->timeline);
@@ -299,6 +302,8 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->timelimit = 400;
     data->spawnspeed = 80;
+    data->currentspawn = data->spawnspeed;
+    data->spawncounter = data->spawnspeed;
 
     data->lost = false;
     data->won = false;

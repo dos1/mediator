@@ -45,7 +45,7 @@ struct RocketsResources {
 
         int flash;
 
-        int timelimit, spawnspeed;
+        int timelimit, spawnspeed, currentspawn, spawncounter;
 
 		struct Timeline *timeline;
 };
