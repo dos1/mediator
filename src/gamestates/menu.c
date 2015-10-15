@@ -171,8 +171,10 @@ void Gamestate_Logic(struct Game *game, struct MenuResources* data) {
         if (data->monster_pos < -202) {
 			data->starting = false;
             //LoadGamestate(game, "info");
+            LoadGamestate(game, "rockets");
             LoadGamestate(game, "riots");
-            StartGamestate(game, "riots");
+            LoadGamestate(game, "lollipop");
+            StartGamestate(game, "rockets");
 			StopGamestate(game, "menu");
 		}
 

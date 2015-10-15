@@ -22,7 +22,7 @@
 struct RocketsResources {
         ALLEGRO_FONT *font;
         ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *combined, *clouds;
-        struct Character *rocket_template, *usa_flag, *ru_flag, *cursor, *rainbow;
+        struct Character *rocket_template, *usa_flag, *ru_flag, *cursor, *rainbow, *riot, *euro;
 
         struct Rocket {
             struct Character *character;
@@ -43,7 +43,7 @@ struct RocketsResources {
 
         bool lost, won;
 
-        int flash;
+        int flash, zadyma;
 
         int timelimit, spawnspeed;
 

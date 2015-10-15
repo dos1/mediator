@@ -68,7 +68,8 @@ void DrawRockets(struct Game *game, struct RocketsResources* data, struct Rocket
 
 bool switchMinigame(struct Game *game, struct TM_Action *action, enum TM_ActionState state) {
         if (state == TM_ACTIONSTATE_START) {
-            SwitchGamestate(game, "riots", "rockets");
+            StopGamestate(game, "riots");
+            StartGamestate(game, "rockets");
         }
         return true;
 }
@@ -138,12 +139,19 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
         data->flash--;
     }
 
+    if (data->lost) {
+        data->zadyma++;
+        if (data->zadyma >= 255) {
+            data->zadyma = 255;
+        }
+    }
 
     AnimateCharacter(game, data->usa_flag, 1);
     AnimateCharacter(game, data->ru_flag, 1);
+    AnimateCharacter(game, data->riot, 1);
 
     if (data->won) {
-        AnimateCharacter(game, data->rainbow, 1);
+        AnimateCharacter(game, data->euro, 1);
     }
 
     if ((data->counter >= data->timelimit) && (!data->lost) && (!data->won)) {
@@ -165,8 +173,8 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
             tmp = tmp->next;
         }
         if (!stillthere) {
-            SelectSpritesheet(game, data->rainbow, "shine");
-            SetCharacterPosition(game, data->rainbow, 89, 42, 0);
+            SelectSpritesheet(game, data->euro, "euro");
+            SetCharacterPosition(game, data->euro, 0, 0, 0);
             al_play_sample_instance(data->wuwu_sound);
             data->won = true;
             SelectSpritesheet(game, data->usa_flag, "poland");
@@ -242,7 +250,7 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
     }
 
     if (data->won) {
-        DrawCharacter(game, data->rainbow, al_map_rgb(255,255,255), 0);
+        DrawCharacter(game, data->euro, al_map_rgb(255,255,255), 0);
     }
 
 
@@ -252,22 +260,26 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
     DrawRockets(game, data, data->rockets_left);
     DrawRockets(game, data, data->rockets_right);
 
-    DrawCharacter(game, data->usa_flag, al_map_rgb(255,255,255), 1);
-    DrawCharacter(game, data->ru_flag, al_map_rgb(255,255,255), 0);
-
-    al_draw_bitmap(data->earth, 5, 50, 0);
+    if (data->lost) {
+        DrawCharacter(game, data->riot, al_map_rgb(255,255,255), 0);
+    } else {
+        DrawCharacter(game, data->usa_flag, al_map_rgb(255,255,255), 1);
+        DrawCharacter(game, data->ru_flag, al_map_rgb(255,255,255), 0);
+        al_draw_bitmap(data->earth, 5, 50, 0);
+    }
 
 
     if (data->lost) {
-        al_draw_bitmap(data->clouds, -data->counter / 2, 0, 0);
+        al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 2, 0, 0);
     } else {
-        al_draw_tinted_bitmap(data->clouds, al_map_rgba(16, 16, 16, 16), -data->counter / 3, 0, 0);
+        al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 3, 0, 0);
     }
 
 
     if ((!data->lost) && (!data->won)) {
-        al_draw_filled_rectangle(0, 0, 320, 6, al_map_rgb(64, 64, 64));
-        al_draw_filled_rectangle(0, 0, 320 * (1 - (data->counter / (float)data->timelimit)), 6, al_map_rgb(255,128, 128));
+        al_draw_filled_rectangle(78, 5, 78+164, 5+5, al_map_rgb(155, 142, 142));
+        al_draw_filled_rectangle(80, 6, 80+160, 6+3, al_map_rgb(66, 55, 30));
+        al_draw_filled_rectangle(80, 6, (data->counter < data->timelimit) ? (80+ 160 * (1 - (data->counter / (float)data->timelimit))) : 80, 6+3, al_map_rgb(225,182, 80));
     }
 
     if (data->flash) {
@@ -292,11 +304,15 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
     data->won = false;
 
     data->flash = 0;
+    data->zadyma = 16;
 
     SetCharacterPosition(game, data->usa_flag, 185, 80, 0);
     SetCharacterPosition(game, data->ru_flag, 25, 80, 0);
 
     SetCharacterPosition(game, data->cursor, -100, -100, 0);
+
+    SetCharacterPosition(game, data->riot, 0, 0, 0);
+    SelectSpritesheet(game, data->riot, "riot");
 
     SelectSpritesheet(game, data->usa_flag, "legia");
     SelectSpritesheet(game, data->ru_flag, "lech");
@@ -305,6 +321,11 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->counter = 0;
     data->cloud_rotation = 0;
+
+    data->mousemove.bottom = false;
+    data->mousemove.top = false;
+    data->mousemove.left = false;
+    data->mousemove.right = false;
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, ALLEGRO_EVENT *ev) {
@@ -404,11 +425,19 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     RegisterSpritesheet(game, data->rainbow, "be");
     LoadSpritesheets(game, data->rainbow);
 
+    data->riot = CreateCharacter(game, "riot");
+    RegisterSpritesheet(game, data->riot, "riot");
+    LoadSpritesheets(game, data->riot);
+
+    data->euro = CreateCharacter(game, "euro");
+    RegisterSpritesheet(game, data->euro, "euro");
+    LoadSpritesheets(game, data->euro);
+
     return data;
 }
 
 void Gamestate_Stop(struct Game *game, struct RocketsResources* data) {
-
+    TM_CleanQueue(data->timeline);
 }
 
 void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {

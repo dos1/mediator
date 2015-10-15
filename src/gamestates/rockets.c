@@ -131,7 +131,8 @@ void DrawRockets(struct Game *game, struct RocketsResources* data, struct Rocket
 
 bool switchMinigame(struct Game *game, struct TM_Action *action, enum TM_ActionState state) {
         if (state == TM_ACTIONSTATE_START) {
-            SwitchGamestate(game, "rockets", "riots");
+            StopGamestate(game, "rockets");
+            StartGamestate(game, "riots");
         }
         return true;
 }
@@ -363,8 +364,9 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
     DrawRockets(game, data, data->rockets_right);
 
     if ((!data->lost) && (!data->won)) {
-        al_draw_filled_rectangle(0, 0, 320, 6, al_map_rgb(64, 64, 64));
-        al_draw_filled_rectangle(0, 0, 320 * (1 - (data->counter / (float)data->timelimit)), 6, al_map_rgb(255,128, 128));
+        al_draw_filled_rectangle(78, 5, 78+164, 5+5, al_map_rgb(155, 142, 142));
+        al_draw_filled_rectangle(80, 6, 80+160, 6+3, al_map_rgb(66, 55, 30));
+        al_draw_filled_rectangle(80, 6, (data->counter < data->timelimit) ? (80+160 * (1 - (data->counter / (float)data->timelimit))) : 80, 6+3, al_map_rgb(225,182, 80));
     }
 
     if (data->flash) {
@@ -402,6 +404,11 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->counter = 0;
     data->cloud_rotation = 0;
+
+    data->mousemove.bottom = false;
+    data->mousemove.top = false;
+    data->mousemove.left = false;
+    data->mousemove.right = false;
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, ALLEGRO_EVENT *ev) {
@@ -498,7 +505,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 }
 
 void Gamestate_Stop(struct Game *game, struct RocketsResources* data) {
-
+    TM_CleanQueue(data->timeline);
 }
 
 void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {
