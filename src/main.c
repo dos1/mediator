@@ -219,6 +219,16 @@ int main(int argc, char **argv){
 	game.shuttingdown = false;
 	game.restart = false;
 
+    game.mediator.lives = 3;
+    game.mediator.score = 0;
+    game.mediator.modificator = 1;
+
+    game.mediator.heart = CreateCharacter(&game, "heart");
+    RegisterSpritesheet(&game, game.mediator.heart, "heart");
+    RegisterSpritesheet(&game, game.mediator.heart, "blank");
+    LoadSpritesheets(&game, game.mediator.heart);
+    SelectSpritesheet(&game, game.mediator.heart, "heart");
+
 	char* gamestate = strdup("dosowisko"); // FIXME: don't hardcore gamestate
 
 	int c;

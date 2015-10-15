@@ -150,7 +150,7 @@ void Gamestate_Draw(struct Game *game, struct MenuResources* data) {
 	al_draw_bitmap(data->bg, 0, 0, 0);
 	al_draw_bitmap(data->monster, data->monster_pos, 10, 0);
 	if (!data->starting) {
-		al_draw_bitmap(data->title, 123, 25 - (pow(sin(data->title_pos), 2) * 16) - data->screen_pos, 0);
+        al_draw_bitmap(data->title, 12, 25 - (pow(sin(data->title_pos), 2) * 16) - data->screen_pos, 0);
 	}
 
     if ((data->menustate == MENUSTATE_HIDDEN) && (!data->starting)) {
@@ -174,7 +174,8 @@ void Gamestate_Logic(struct Game *game, struct MenuResources* data) {
             LoadGamestate(game, "rockets");
             LoadGamestate(game, "riots");
             LoadGamestate(game, "lollipop");
-            StartGamestate(game, "rockets");
+            LoadGamestate(game, "theend");
+            StartGamestate(game, "lollipop");
 			StopGamestate(game, "menu");
 		}
 

@@ -13,6 +13,7 @@ ENDMACRO()
 GAMESTATE("dosowisko")
 GAMESTATE("menu")
 
+GAMESTATE("theend")
 GAMESTATE("rockets")
 GAMESTATE("lollipop")
 GAMESTATE("riots")

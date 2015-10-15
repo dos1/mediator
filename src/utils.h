@@ -48,6 +48,9 @@ void SetupViewport(struct Game *game);
 void Console_Unload(struct Game *game);
 void DrawConsole(struct Game *game);
 
+void AdvanceLevel(struct Game *game, bool won);
+void ShowLevelStatistics(struct Game *game);
+
 /*! \brief Draws rectangle filled with vertical gradient. */
 void DrawVerticalGradientRect(float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom);
 /*! \brief Draws rectangle filled with horizontal gradient. */

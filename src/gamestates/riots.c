@@ -75,6 +75,14 @@ bool switchMinigame(struct Game *game, struct TM_Action *action, enum TM_ActionS
         return true;
 }
 
+bool theEnd(struct Game *game, struct TM_Action *action, enum TM_ActionState state) {
+        if (state == TM_ACTIONSTATE_START) {
+            StopGamestate(game, "riots");
+            StartGamestate(game, "theend");
+        }
+        return true;
+}
+
 void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rocket* rockets) {
     struct Rocket *tmp = rockets;
     while (tmp) {
@@ -97,6 +105,9 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
                 MoveCharacter(game, tmp->character, 5, 5, 0);
 
                 if (!((tmp->character->x > 140) && (tmp->character->x < 180))) {
+                    if (!data->lost) {
+                        AdvanceLevel(game, false);
+                    }
 
                     data->lost = true;
                     data->flash = 4;
@@ -151,6 +162,9 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
     AnimateCharacter(game, data->usa_flag, 1);
     AnimateCharacter(game, data->ru_flag, 1);
     AnimateCharacter(game, data->riot, 1);
+    if (data->lost) {
+        AnimateCharacter(game, game->mediator.heart, 1);
+    }
 
     if (data->won) {
         AnimateCharacter(game, data->euro, 1);
@@ -179,10 +193,16 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
             SetCharacterPosition(game, data->euro, 0, 0, 0);
             al_play_sample_instance(data->wuwu_sound);
             data->won = true;
+            AdvanceLevel(game, true);
             SelectSpritesheet(game, data->usa_flag, "poland");
             SelectSpritesheet(game, data->ru_flag, "poland");
             TM_AddDelay(data->timeline, 2500);
-            TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
+            if (game->mediator.lives > 0) {
+                TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
+            } else {
+
+                TM_AddAction(data->timeline, theEnd, NULL, "switchMinigame");
+            }
         }
     }
 
@@ -257,8 +277,9 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
     }
 
 
-
-    DrawCharacter(game, data->cursor, al_map_rgb(255,255,255), 0);
+    if ((!data->lost) && (!data->won)) {
+        DrawCharacter(game, data->cursor, al_map_rgb(255,255,255), 0);
+    }
 
     DrawRockets(game, data, data->rockets_left);
     DrawRockets(game, data, data->rockets_right);
@@ -292,6 +313,10 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
     al_set_target_backbuffer(game->display);
     al_draw_bitmap(data->pixelator, 0, 0, 0);
 
+    if (data->lost) {
+        ShowLevelStatistics(game);
+    }
+
     //Gamestate_Logic(game, data);
 
 }
@@ -300,10 +325,10 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
     data->rockets_left = NULL;
     data->rockets_right = NULL;
 
-    data->timelimit = 400;
-    data->spawnspeed = 80;
+    data->timelimit = 400 * game->mediator.modificator;
+    data->spawnspeed = 80 / game->mediator.modificator;
     data->currentspawn = data->spawnspeed;
-    data->spawncounter = data->spawnspeed;
+    data->spawncounter = data->spawnspeed - 20;
 
     data->lost = false;
     data->won = false;

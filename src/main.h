@@ -104,6 +104,13 @@ struct Game {
             } instance;
         } muzyczka;
 
+        struct {
+            int score;
+            int lives;
+            float modificator;
+            struct Character *heart;
+        } mediator;
+
 };
 
 #endif
