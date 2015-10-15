@@ -41,7 +41,7 @@ void About(struct Game *game, struct MenuResources* data) {
 	al_set_target_backbuffer(game->display);
 	al_clear_to_color(al_map_rgb(0,0,170));
 
-	char *header = "TICKLE MONSTER";
+    char *header = "THE MEDIATOR";
 
 	al_draw_filled_rectangle(al_get_display_width(game->display)/2 - al_get_text_width(game->_priv.font_bsod, header)/2 - 4, (int)(al_get_display_height(game->display) * 0.32), 4 + al_get_display_width(game->display)/2 + al_get_text_width(game->_priv.font_bsod, header)/2, (int)(al_get_display_height(game->display) * 0.32) + al_get_font_line_height(game->_priv.font_bsod), al_map_rgb(170,170,170));
 
@@ -53,8 +53,7 @@ void About(struct Game *game, struct MenuResources* data) {
 	al_draw_textf(game->_priv.font_bsod, al_map_rgb(255,255,255), al_get_display_width(game->display)/2 - al_get_text_width(game->_priv.font_bsod, header2)/2, (int)(al_get_display_height(game->display) * 0.32+3*al_get_font_line_height(game->_priv.font_bsod)*1.25), ALLEGRO_ALIGN_LEFT, "%p and system just doesn't know what went wrong.", (void*)game);
 
 	al_draw_text(game->_priv.font_bsod, al_map_rgb(255,255,255), al_get_display_width(game->display)/2, (int)(al_get_display_height(game->display) * 0.32+5*al_get_font_line_height(game->_priv.font_bsod)*1.25), ALLEGRO_ALIGN_CENTRE, 	"About screen not implemented!");
-	al_draw_text(game->_priv.font_bsod, al_map_rgb(255,255,255), al_get_display_width(game->display)/2, (int)(al_get_display_height(game->display) * 0.32+6*al_get_font_line_height(game->_priv.font_bsod)*1.25), ALLEGRO_ALIGN_CENTRE, 	"See http://dosowisko.net/ticklemonster/");
-	al_draw_text(game->_priv.font_bsod, al_map_rgb(255,255,255), al_get_display_width(game->display)/2, (int)(al_get_display_height(game->display) * 0.32+7*al_get_font_line_height(game->_priv.font_bsod)*1.25), ALLEGRO_ALIGN_CENTRE, 	"Made for Ludum Dare 33 by Sebastian Krzyszkowiak");
+    al_draw_text(game->_priv.font_bsod, al_map_rgb(255,255,255), al_get_display_width(game->display)/2, (int)(al_get_display_height(game->display) * 0.32+7*al_get_font_line_height(game->_priv.font_bsod)*1.25), ALLEGRO_ALIGN_CENTRE, 	"Made in the theater by Sebastian Krzyszkowiak and Konrad Burandt");
 
 	al_draw_text(game->_priv.font_bsod, al_map_rgb(255,255,255), al_get_display_width(game->display)/2 - al_get_text_width(game->_priv.font_bsod, header2)/2, (int)(al_get_display_height(game->display) * 0.32+9*al_get_font_line_height(game->_priv.font_bsod)*1.25), ALLEGRO_ALIGN_LEFT, "* Press any key to terminate this error.");
 	al_draw_text(game->_priv.font_bsod, al_map_rgb(255,255,255), al_get_display_width(game->display)/2 - al_get_text_width(game->_priv.font_bsod, header2)/2, (int)(al_get_display_height(game->display) * 0.32+10*al_get_font_line_height(game->_priv.font_bsod)*1.25), ALLEGRO_ALIGN_LEFT, "* Press any key to destroy all muffins in the world.");
@@ -71,7 +70,7 @@ void DrawMenuState(struct Game *game, struct MenuResources *data) {
 	ALLEGRO_TRANSFORM trans, cur_trans;
 	al_copy_transform(&trans, tmp_trans);
 	al_copy_transform(&cur_trans, tmp_trans);
-	al_translate_transform(&trans, (al_get_display_width(game->display) / 320.0) * 100, (al_get_display_height(game->display) / 260.0) * ((180-data->screen_pos) - 48));
+    al_translate_transform(&trans, (al_get_display_width(game->display) / 320.0) * 80, (al_get_display_height(game->display) / 260.0) * ((180-data->screen_pos) - 48));
 	al_use_transform(&trans);
 
 	ALLEGRO_FONT *font = data->font;
@@ -134,6 +133,11 @@ void DrawMenuState(struct Game *game, struct MenuResources *data) {
 void ChangeMenuState(struct Game *game, struct MenuResources* data, enum menustate_enum state) {
 	data->menustate=state;
 	data->selected=0;
+    if (state == MENUSTATE_HIDDEN) {
+        al_set_sample_instance_gain(game->muzyczka.instance.fg, 0.0);
+    } else {
+        al_set_sample_instance_gain(game->muzyczka.instance.fg, 1.5);
+    }
 	PrintConsole(game, "menu state changed %d", state);
 }
 
@@ -149,6 +153,10 @@ void Gamestate_Draw(struct Game *game, struct MenuResources* data) {
 		al_draw_bitmap(data->title, 123, 25 - (pow(sin(data->title_pos), 2) * 16) - data->screen_pos, 0);
 	}
 
+    if ((data->menustate == MENUSTATE_HIDDEN) && (!data->starting)) {
+        DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.9, ALLEGRO_ALIGN_CENTRE, "Press RETURN");
+    }
+
 	DrawMenuState(game, data);
 }
 
@@ -160,18 +168,18 @@ void Gamestate_Logic(struct Game *game, struct MenuResources* data) {
 	if (data->starting) {
 		data->monster_pos -= 6;
 
-		if (data->monster_pos < -202) {
+        if (data->monster_pos < -202) {
 			data->starting = false;
             //LoadGamestate(game, "info");
-            LoadGamestate(game, "rockets");
-            StartGamestate(game, "rockets");
+            LoadGamestate(game, "riots");
+            StartGamestate(game, "riots");
 			StopGamestate(game, "menu");
 		}
 
 	} else {
 		data->monster_pos += 6;
-		if (data->monster_pos > 0) {
-			data->monster_pos = 0;
+        if (data->monster_pos > -40) {
+            data->monster_pos = -40;
 		}
 	}
 
@@ -207,13 +215,23 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 	data->title = al_load_bitmap( GetDataFilePath(game, "title.png") );
 	(*progress)(game);
 
-    //data->sample = al_load_sample( GetDataFilePath(game, "monster.flac") );
+    game->muzyczka.sample.fg = al_load_sample( GetDataFilePath(game, "song-fg.wav") );
+    game->muzyczka.sample.bg = al_load_sample( GetDataFilePath(game, "song-bg.wav") );
+    game->muzyczka.sample.drums = al_load_sample( GetDataFilePath(game, "song-drums.wav") );
     data->click_sample = al_load_sample( GetDataFilePath(game, "click.flac") );
 	(*progress)(game);
 
-    //data->music = al_create_sample_instance(data->sample);
-    //al_attach_sample_instance_to_mixer(data->music, game->audio.music);
-    //al_set_sample_instance_playmode(data->music, ALLEGRO_PLAYMODE_LOOP);
+    game->muzyczka.instance.fg = al_create_sample_instance(game->muzyczka.sample.fg);
+    al_attach_sample_instance_to_mixer(game->muzyczka.instance.fg, game->audio.music);
+    al_set_sample_instance_playmode(game->muzyczka.instance.fg, ALLEGRO_PLAYMODE_LOOP);
+
+    game->muzyczka.instance.bg = al_create_sample_instance(game->muzyczka.sample.bg);
+    al_attach_sample_instance_to_mixer(game->muzyczka.instance.bg, game->audio.music);
+    al_set_sample_instance_playmode(game->muzyczka.instance.bg, ALLEGRO_PLAYMODE_LOOP);
+
+    game->muzyczka.instance.drums = al_create_sample_instance(game->muzyczka.sample.drums);
+    al_attach_sample_instance_to_mixer(game->muzyczka.instance.drums, game->audio.music);
+    al_set_sample_instance_playmode(game->muzyczka.instance.drums, ALLEGRO_PLAYMODE_LOOP);
 
 	data->click = al_create_sample_instance(data->click_sample);
 	al_attach_sample_instance_to_mixer(data->click, game->audio.fx);
@@ -251,7 +269,10 @@ void Gamestate_Unload(struct Game *game, struct MenuResources* data) {
 
 void StartGame(struct Game *game, struct MenuResources *data) {
 	ChangeMenuState(game,data,MENUSTATE_HIDDEN);
-	data->starting = true;
+    al_set_sample_instance_gain(game->muzyczka.instance.drums, 0.0);
+    al_set_sample_instance_gain(game->muzyczka.instance.fg, 1.5);
+    al_set_sample_instance_gain(game->muzyczka.instance.bg, 1.5);
+    data->starting = true;
 }
 
 
@@ -264,7 +285,13 @@ void Gamestate_Start(struct Game *game, struct MenuResources* data) {
 	data->starting = false;
 
 	ChangeMenuState(game,data,MENUSTATE_HIDDEN);
-    //al_play_sample_instance(data->music);
+    al_play_sample_instance(game->muzyczka.instance.fg);
+    al_play_sample_instance(game->muzyczka.instance.bg);
+    al_play_sample_instance(game->muzyczka.instance.drums);
+    al_set_sample_instance_gain(game->muzyczka.instance.fg, 0.0);
+    al_set_sample_instance_gain(game->muzyczka.instance.bg, 1.5);
+    al_set_sample_instance_gain(game->muzyczka.instance.drums, 1.5);
+
 
 }
 

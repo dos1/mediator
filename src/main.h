@@ -95,6 +95,15 @@ struct Game {
 		bool shuttingdown; /*!< If true then shut down of the game is pending. */
 		bool restart; /*!< If true then restart of the game is pending. */
 
+        struct {
+            struct {
+                ALLEGRO_SAMPLE *bg, *fg, *drums;
+            } sample;
+            struct {
+                ALLEGRO_SAMPLE_INSTANCE *bg, *fg, *drums;
+            } instance;
+        } muzyczka;
+
 };
 
 #endif

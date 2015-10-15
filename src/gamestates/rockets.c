@@ -41,7 +41,7 @@ struct Rocket* CreateRocket(struct Game *game, struct RocketsResources* data, st
     n->character->shared = true;
     SelectSpritesheet(game, n->character, right ? "usa" : "ru");
     SetCharacterPosition(game, n->character, right ? 270 : 48, right ? 136 : 122, right ? -0.33 : 0.33);
-    al_play_sample_instance(data->rocket_sound);
+    al_play_sample_instance(data->jump_sound);
 
     if (rockets) {
         struct Rocket *tmp = rockets;
@@ -131,7 +131,7 @@ void DrawRockets(struct Game *game, struct RocketsResources* data, struct Rocket
 
 bool switchMinigame(struct Game *game, struct TM_Action *action, enum TM_ActionState state) {
         if (state == TM_ACTIONSTATE_START) {
-            SwitchGamestate(game, "rockets", "menu");
+            SwitchGamestate(game, "rockets", "riots");
         }
         return true;
 }
@@ -189,9 +189,10 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
                 if (!dupy) {
                     data->lost = true;
                     data->flash = 4;
-                    TM_AddDelay(data->timeline, 3000);
+                    TM_AddDelay(data->timeline, 2500);
                     TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
                     data->spawnspeed = 10;
+                    al_play_sample_instance(data->atom_sound);
                 }
                 if (!dupy) {
                     SelectSpritesheet(game, tmp->character, "atom");
@@ -213,7 +214,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 
 void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
-    if ((data->counter % data->spawnspeed == 0) && (data->counter < data->timelimit)) {
+    if ((data->counter % data->spawnspeed == 0) && ((data->counter < data->timelimit) || (data->lost))) {
         if (data->counter % (data->spawnspeed * 2) == 0) {
             data->rockets_left = CreateRocket(game, data, data->rockets_left, false);
         } else {
@@ -273,6 +274,7 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
                     if (!tmp1->bumped) {
                         tmp1->bumped = true;
+                        al_play_sample_instance(data->rocket_sound);
                         if (data->mousemove.top || data->mousemove.bottom) {
                             tmp1->dy = (data->mousemove.bottom * 2) - 1;
                         }
@@ -378,7 +380,7 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
     data->rockets_left = NULL;
     data->rockets_right = NULL;
 
-    data->timelimit = 500;
+    data->timelimit = 480;
     data->spawnspeed = 40;
 
     data->lost = false;
@@ -429,15 +431,25 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
     data->rocket_sample = al_load_sample( GetDataFilePath(game, "rockets/rocket.wav") );
     data->boom_sample = al_load_sample( GetDataFilePath(game, "rockets/boom.wav") );
+    data->atom_sample = al_load_sample( GetDataFilePath(game, "rockets/atom.wav") );
+    data->jump_sample = al_load_sample( GetDataFilePath(game, "rockets/jump.wav") );
     data->rainbow_sample = al_load_sample( GetDataFilePath(game, "rockets/rainbow.wav") );
 
     data->rocket_sound = al_create_sample_instance(data->rocket_sample);
     al_attach_sample_instance_to_mixer(data->rocket_sound, game->audio.fx);
     al_set_sample_instance_playmode(data->rocket_sound, ALLEGRO_PLAYMODE_ONCE);
 
+    data->atom_sound = al_create_sample_instance(data->atom_sample);
+    al_attach_sample_instance_to_mixer(data->atom_sound, game->audio.fx);
+    al_set_sample_instance_playmode(data->atom_sound, ALLEGRO_PLAYMODE_ONCE);
+
     data->boom_sound = al_create_sample_instance(data->boom_sample);
     al_attach_sample_instance_to_mixer(data->boom_sound, game->audio.fx);
     al_set_sample_instance_playmode(data->boom_sound, ALLEGRO_PLAYMODE_ONCE);
+
+    data->jump_sound = al_create_sample_instance(data->jump_sample);
+    al_attach_sample_instance_to_mixer(data->jump_sound, game->audio.fx);
+    al_set_sample_instance_playmode(data->jump_sound, ALLEGRO_PLAYMODE_ONCE);
 
     data->rainbow_sound = al_create_sample_instance(data->rainbow_sample);
     al_attach_sample_instance_to_mixer(data->rainbow_sound, game->audio.fx);

@@ -19,16 +19,33 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-struct rocketsResources {
-		ALLEGRO_FONT *font;
-        ALLEGRO_BITMAP *bg, *checkerboard, *cursor, *pixelator;
-        struct Spritesheet *rocket_spritesheet;
+struct RocketsResources {
+        ALLEGRO_FONT *font;
+        ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *combined, *clouds;
+        struct Character *rocket_template, *usa_flag, *ru_flag, *cursor, *rainbow;
 
         struct Rocket {
             struct Character *character;
-            float dx, dy;
-            struct Rocket *next;
+            float dx, dy, modifier;
+            bool blown, bumped;
+            struct Rocket *next, *prev;
         } *rockets_left, *rockets_right;
 
-		struct Timeline *timeline;
+        int counter;
+        float cloud_rotation;
+
+        struct {
+            bool top, right, left, bottom;
+        } mousemove;
+
+        ALLEGRO_SAMPLE *rocket_sample, *boom_sample, *rainbow_sample, *jump_sample, *wuwu_sample, *riot_sample;
+        ALLEGRO_SAMPLE_INSTANCE *rocket_sound, *boom_sound, *rainbow_sound, *jump_sound, *wuwu_sound, *riot_sound;
+
+        bool lost, won;
+
+        int flash;
+
+        int timelimit, spawnspeed;
+
+        struct Timeline *timeline;
 };

@@ -38,8 +38,8 @@ struct RocketsResources {
             bool top, right, left, bottom;
         } mousemove;
 
-        ALLEGRO_SAMPLE *rocket_sample, *boom_sample, *rainbow_sample;
-        ALLEGRO_SAMPLE_INSTANCE *rocket_sound, *boom_sound, *rainbow_sound;
+        ALLEGRO_SAMPLE *rocket_sample, *boom_sample, *rainbow_sample, *atom_sample, *jump_sample;
+        ALLEGRO_SAMPLE_INSTANCE *rocket_sound, *boom_sound, *rainbow_sound, *atom_sound, *jump_sound;
 
         bool lost, won;
 
