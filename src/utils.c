@@ -499,14 +499,14 @@ void AnimateCharacter(struct Game *game, struct Character *character, float spee
 			character->pos_tmp = 0;
 			character->pos++;
 		}
-		if (character->pos>=character->spritesheet->cols*character->spritesheet->rows-character->spritesheet->blanks) {
-			character->pos=0;
-			if (character->spritesheet->kill) {
+        if (character->pos>=character->spritesheet->cols*character->spritesheet->rows-character->spritesheet->blanks) {
+            character->pos=0;
+            if (character->spritesheet->kill) {
 				character->dead = true;
 			} else if (character->successor) {
-				SelectSpritesheet(game, character, character->successor);
+                SelectSpritesheet(game, character, character->successor);
 			}
-		}
+        }
 	}
 }
 

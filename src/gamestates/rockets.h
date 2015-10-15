@@ -22,7 +22,7 @@
 struct RocketsResources {
 		ALLEGRO_FONT *font;
         ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *combined, *clouds;
-        struct Character *rocket_template, *usa_flag, *ru_flag, *cursor;
+        struct Character *rocket_template, *usa_flag, *ru_flag, *cursor, *rainbow;
 
         struct Rocket {
             struct Character *character;
@@ -40,6 +40,12 @@ struct RocketsResources {
 
         ALLEGRO_SAMPLE *rocket_sample, *boom_sample, *rainbow_sample;
         ALLEGRO_SAMPLE_INSTANCE *rocket_sound, *boom_sound, *rainbow_sound;
+
+        bool lost, won;
+
+        int flash;
+
+        int timelimit;
 
 		struct Timeline *timeline;
 };
