@@ -193,6 +193,8 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
                     TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
                     data->spawnspeed = 10;
                     al_play_sample_instance(data->atom_sound);
+                    SelectSpritesheet(game, data->usa_flag, "brokenusa");
+                    SelectSpritesheet(game, data->ru_flag, "brokenru");
                 }
                 if (!dupy) {
                     SelectSpritesheet(game, tmp->character, "atom");
@@ -479,10 +481,12 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
     data->usa_flag = CreateCharacter(game, "flag");
     RegisterSpritesheet(game, data->usa_flag, "usa");
+    RegisterSpritesheet(game, data->usa_flag, "brokenusa");
     LoadSpritesheets(game, data->usa_flag);
 
     data->ru_flag = CreateCharacter(game, "flag");
     RegisterSpritesheet(game, data->ru_flag, "ru");
+    RegisterSpritesheet(game, data->ru_flag, "brokenru");
     LoadSpritesheets(game, data->ru_flag);
 
     data->rainbow = CreateCharacter(game, "rainbow");
