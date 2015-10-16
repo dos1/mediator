@@ -271,7 +271,12 @@ void Gamestate_Unload(struct Game *game, struct MenuResources* data) {
 
 
 void StartGame(struct Game *game, struct MenuResources *data) {
-	ChangeMenuState(game,data,MENUSTATE_HIDDEN);
+
+    game->mediator.lives = 3;
+    game->mediator.score = 0;
+    game->mediator.modificator = 1;
+
+    ChangeMenuState(game,data,MENUSTATE_HIDDEN);
     al_set_sample_instance_gain(game->muzyczka.instance.drums, 0.0);
     al_set_sample_instance_gain(game->muzyczka.instance.fg, 1.5);
     al_set_sample_instance_gain(game->muzyczka.instance.bg, 1.5);

@@ -114,7 +114,12 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
             data->lost = true;
             SelectSpritesheet(game, data->riot, "end");
             TM_AddDelay(data->timeline, 2500);
-            TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
+            if (game->mediator.lives > 0) {
+                TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
+            } else {
+
+                TM_AddAction(data->timeline, theEnd, NULL, "switchMinigame");
+            }
             al_play_sample_instance(data->boom_sound);
         }
 
@@ -161,6 +166,12 @@ PrintConsole(game, "%f", data->currentpos);
 
     al_set_target_backbuffer(game->display);
     al_draw_bitmap(data->pixelator, 0, 0, 0);
+
+    if ((!data->lost) && (!data->won)) {
+        al_draw_filled_rectangle(78, 5, 78+164, 5+5, al_map_rgb(155, 142, 142));
+        al_draw_filled_rectangle(80, 6, 80+160, 6+3, al_map_rgb(66, 55, 30));
+        al_draw_filled_rectangle(80, 6, (data->counter < data->timelimit) ? (80+160 * (1 - (data->counter / (float)data->timelimit))) : 80, 6+3, al_map_rgb(225,182, 80));
+    }
 
     if (data->won) {
         DrawCharacter(game, data->riot, al_map_rgb(255,255,255), 0);
