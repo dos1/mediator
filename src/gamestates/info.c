@@ -80,7 +80,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 }
 
 void Gamestate_Stop(struct Game *game, struct dosowiskoResources* data) {
-
+	al_stop_sample_instance(data->sound);
 }
 
 void Gamestate_Unload(struct Game *game, struct dosowiskoResources* data) {

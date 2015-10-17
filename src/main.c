@@ -149,8 +149,6 @@ int main(int argc, char **argv){
 	else al_set_new_display_flags(ALLEGRO_WINDOWED);
 	al_set_new_display_option(ALLEGRO_VSYNC, 2-atoi(GetConfigOptionDefault(&game, "SuperDerpy", "vsync", "1")), ALLEGRO_SUGGEST);
 	al_set_new_display_option(ALLEGRO_OPENGL, atoi(GetConfigOptionDefault(&game, "SuperDerpy", "opengl", "1")), ALLEGRO_SUGGEST);
-    al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 0, ALLEGRO_SUGGEST);
-    al_set_new_display_option(ALLEGRO_SAMPLES, 0, ALLEGRO_SUGGEST);
 #ifdef ALLEGRO_WINDOWS
 	al_set_new_window_position(20, 40); // workaround nasty Windows bug with window being created off-screen
 #endif
@@ -298,6 +296,8 @@ int main(int argc, char **argv){
 			// FIXME: move to function
 			// TODO: support dependences
 
+			double t = -1;
+
 			while (tmp) {
 				if ((tmp->pending_load) && (tmp->loaded)) {
 					PrintConsole(&game, "Unloading gamestate \"%s\"...", tmp->name);
@@ -341,6 +341,7 @@ int main(int argc, char **argv){
 						if (!(tmp->api.Gamestate_ProgressCount = dlsym(tmp->handle, "Gamestate_ProgressCount"))) { GS_ERROR; }
 
 						int p = 0;
+
 						void progress(struct Game *game) {
 							p++;
 							DrawGamestates(game);
@@ -348,8 +349,13 @@ int main(int argc, char **argv){
 							if (game->config.debug) PrintConsole(game, "[%s] Progress: %d% (%d/%d)", tmp->name, (int)(progress*100), p, *(tmp->api.Gamestate_ProgressCount));
 							if (tmp->showLoading) (*game->_priv.loading.Draw)(game, game->_priv.loading.data, progress);
 							DrawConsole(game);
-							al_flip_display();
+							if (al_get_time() - t >= 1/60.0) {
+								al_flip_display();
+							}
+							t = al_get_time();
 						}
+
+						t = al_get_time();
 
 						// initially draw loading screen with empty bar
 						DrawGamestates(&game);
@@ -357,7 +363,10 @@ int main(int argc, char **argv){
                             (*game._priv.loading.Draw)(&game, game._priv.loading.data, loaded/(float)toLoad);
 						}
 						DrawConsole(&game);
-						al_flip_display();
+						if (al_get_time() - t >= 1/60.0) {
+							al_flip_display();
+						}
+						t = al_get_time();
 						tmp->data = (*tmp->api.Gamestate_Load)(&game, &progress); // feel free to replace "progress" with empty function if you want to compile with clang
 						loaded++;
 
