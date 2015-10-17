@@ -80,25 +80,25 @@ void DrawMenuState(struct Game *game, struct MenuResources *data) {
 		case MENUSTATE_MAIN:
 		case MENUSTATE_HIDDEN:
 			if (!data->invisible) {
-				DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, "Start game");
-				DrawTextWithShadow(font, data->selected==1 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.6, ALLEGRO_ALIGN_CENTRE, "Options");
-				DrawTextWithShadow(font, data->selected==2 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.7, ALLEGRO_ALIGN_CENTRE, "About");
-				DrawTextWithShadow(font, data->selected==3 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.8, ALLEGRO_ALIGN_CENTRE, "Exit");
+                DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, "Start game");
+                DrawTextWithShadow(font, data->selected==1 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.6, ALLEGRO_ALIGN_CENTRE, "Options");
+                DrawTextWithShadow(font, data->selected==2 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.7, ALLEGRO_ALIGN_CENTRE, "About");
+                DrawTextWithShadow(font, data->selected==3 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.8, ALLEGRO_ALIGN_CENTRE, "Exit");
 			}
 			break;
 		case MENUSTATE_OPTIONS:
-			DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, "Video settings");
-			DrawTextWithShadow(font, data->selected==1 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.6, ALLEGRO_ALIGN_CENTRE, "Audio settings");
-			DrawTextWithShadow(font, data->selected==3 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.8, ALLEGRO_ALIGN_CENTRE, "Back");
+            DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, "Video settings");
+            DrawTextWithShadow(font, data->selected==1 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.6, ALLEGRO_ALIGN_CENTRE, "Audio settings");
+            DrawTextWithShadow(font, data->selected==3 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.8, ALLEGRO_ALIGN_CENTRE, "Back");
 			break;
 		case MENUSTATE_AUDIO:
 			if (game->config.music) snprintf(text, 255, "Music volume: %d0%%", game->config.music);
 			else sprintf(text, "Music disabled");
-			DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, text);
+            DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, text);
 			if (game->config.fx) snprintf(text, 255, "Effects volume: %d0%%", game->config.fx);
 			else sprintf(text, "Effects disabled");
-			DrawTextWithShadow(font, data->selected==1 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.6, ALLEGRO_ALIGN_CENTRE, text);
-			DrawTextWithShadow(font, data->selected==3 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.8, ALLEGRO_ALIGN_CENTRE, "Back");
+            DrawTextWithShadow(font, data->selected==1 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.6, ALLEGRO_ALIGN_CENTRE, text);
+            DrawTextWithShadow(font, data->selected==3 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.8, ALLEGRO_ALIGN_CENTRE, "Back");
 			break;
 		case MENUSTATE_ABOUT:
 			al_use_transform(&cur_trans);
@@ -111,16 +111,16 @@ void DrawMenuState(struct Game *game, struct MenuResources *data) {
 			}
 			else {
 				sprintf(text, "Fullscreen: no");
-				color = data->selected==1 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255);
+                color = data->selected==1 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255);
 			}
-			DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, text);
+            DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, text);
 			sprintf(text, "Resolution: %dx", data->options.resolution);
 			DrawTextWithShadow(font, color, game->viewport.width*0.5, game->viewport.height*0.6, ALLEGRO_ALIGN_CENTRE, text);
-			DrawTextWithShadow(font, data->selected==3 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.8, ALLEGRO_ALIGN_CENTRE, "Back");
+            DrawTextWithShadow(font, data->selected==3 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.8, ALLEGRO_ALIGN_CENTRE, "Back");
 			break;
 		default:
 			data->selected=0;
-			DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(128,255,128) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, "Not implemented yet");
+            DrawTextWithShadow(font, data->selected==0 ? al_map_rgb(255,222, 120) : al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5, ALLEGRO_ALIGN_CENTRE, "Not implemented yet");
 			break;
 	}
 	free(text);
