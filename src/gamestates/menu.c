@@ -275,7 +275,7 @@ void StartGame(struct Game *game, struct MenuResources *data) {
 
     game->mediator.lives = 3;
     game->mediator.score = 0;
-    game->mediator.modificator = 1;
+		game->mediator.modificator = 0.9756;
 
     ChangeMenuState(game,data,MENUSTATE_HIDDEN);
     al_set_sample_instance_gain(game->muzyczka.instance.drums, 0.0);

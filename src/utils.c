@@ -537,7 +537,7 @@ void AdvanceLevel(struct Game *game, bool won) {
     } else {
         game->mediator.lives--;
     }
-    game->mediator.modificator *= 1.02;
+		game->mediator.modificator *= 1.025;
     SelectSpritesheet(game, game->mediator.heart, "heart");
 }
 

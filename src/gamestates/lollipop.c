@@ -48,7 +48,7 @@ bool theEnd(struct Game *game, struct TM_Action *action, enum TM_ActionState sta
 void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
     if ((data->spawncounter == data->currentspawn) && ((data->counter < data->timelimit) || (data->lost))) {
-        data->dx =(( (rand() / (float)RAND_MAX) - 0.5)/ 500.0) * game->mediator.modificator;
+				data->dx = (( (rand() / (float)RAND_MAX) - 0.5)/ 200.0) * game->mediator.modificator;
         PrintConsole(game, "DX %f", data->dx);
         data->spawncounter = 0;
     }
@@ -158,9 +158,9 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
 void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->timelimit = 400 * game->mediator.modificator;
-    data->spawnspeed = 80 / game->mediator.modificator;
+		data->spawnspeed = 40 / game->mediator.modificator;
     data->currentspawn = data->spawnspeed;
-    data->spawncounter = data->spawnspeed - 20;
+		data->spawncounter = data->spawnspeed;
 
     data->lost = false;
     data->won = false;
@@ -186,7 +186,9 @@ void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, AL
     } else if (ev->type == ALLEGRO_EVENT_MOUSE_AXES) {
         int mousex = ev->mouse.dx / (al_get_display_width(game->display) / 320);
 
-        data->currentpos += mousex / 3000.0;
+				if (!data->lost) {
+					data->currentpos += mousex / 5000.0 / game->mediator.modificator;
+				}
         al_set_mouse_xy(game->display, al_get_display_width(game->display) / 2, al_get_display_height(game->display) / 2);
     }
 }
