@@ -33,14 +33,14 @@ int Gamestate_ProgressCount = 1;
 
 void Gamestate_Logic(struct Game *game, struct dosowiskoResources* data) {
     data->tick++;
-    if (data->tick > 110) {
+		if (data->tick > 86) {
         SwitchGamestate(game, "info", "lollipop");
     }
 }
 
 void Gamestate_Draw(struct Game *game, struct dosowiskoResources* data) {
     al_draw_bitmap(data->bitmap, 0, 0, 0);
-    if ((data->tick / 20) % 2 == 0) {
+		if ((data->tick / 11) % 2 == 0) {
         DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), 320/2, 180/2, ALLEGRO_ALIGN_CENTER, "Use mouse");
     }
 }
@@ -49,6 +49,7 @@ void Gamestate_Start(struct Game *game, struct dosowiskoResources* data) {
     data->tick = 0;
     al_grab_mouse(game->display);
     al_hide_mouse_cursor(game->display);
+		al_play_sample_instance(data->sound);
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct dosowiskoResources* data, ALLEGRO_EVENT *ev) {
@@ -67,6 +68,13 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
     data->font = al_load_ttf_font(GetDataFilePath(game, "fonts/MonkeyIsland.ttf"),100,0 );
 	(*progress)(game);
+
+		data->sample = al_load_sample( GetDataFilePath(game, "warning.wav") );
+
+		data->sound = al_create_sample_instance(data->sample);
+		al_attach_sample_instance_to_mixer(data->sound, game->audio.fx);
+		al_set_sample_instance_playmode(data->sound, ALLEGRO_PLAYMODE_ONCE);
+		al_set_sample_instance_gain(data->sound, 1.25);
 
 	return data;
 }

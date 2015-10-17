@@ -372,7 +372,7 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, ALLEGRO_EVENT *ev) {
     TM_HandleEvent(data->timeline, ev);
     if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ESCAPE)) {
-        SwitchGamestate(game, "riots", "menu");
+				SwitchGamestate(game, "riots", "theend");
     } else if (ev->type == ALLEGRO_EVENT_MOUSE_AXES) {
         int mousex = ev->mouse.x / (al_get_display_width(game->display) / 320);
         int mousey = 50;

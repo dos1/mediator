@@ -62,6 +62,8 @@ void Gamestate_Start(struct Game *game, struct dosowiskoResources* data) {
     al_ungrab_mouse();
     if (!game->config.fullscreen) al_show_mouse_cursor(game->display);
 
+		al_play_sample_instance(data->sound);
+
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct dosowiskoResources* data, ALLEGRO_EVENT *ev) {
@@ -80,6 +82,13 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
     data->font = al_load_ttf_font(GetDataFilePath(game, "fonts/MonkeyIsland.ttf"),100,0 );
 	(*progress)(game);
+
+		data->sample = al_load_sample( GetDataFilePath(game, "end.wav") );
+
+		data->sound = al_create_sample_instance(data->sample);
+		al_attach_sample_instance_to_mixer(data->sound, game->audio.fx);
+		al_set_sample_instance_playmode(data->sound, ALLEGRO_PLAYMODE_ONCE);
+		al_set_sample_instance_gain(data->sound, 1.25);
 
 	return data;
 }
