@@ -41,7 +41,7 @@ void Gamestate_Logic(struct Game *game, struct dosowiskoResources* data) {
 void Gamestate_Draw(struct Game *game, struct dosowiskoResources* data) {
     al_draw_bitmap(data->bitmap, 0, 0, 0);
 		if ((data->tick / 11) % 2 == 0) {
-        DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), 320/2, 180/2, ALLEGRO_ALIGN_CENTER, "Use mouse");
+				al_draw_bitmap(data->icon, 320 / 2 - al_get_bitmap_width(data->icon) / 2, 180 / 2 - al_get_bitmap_height(data->icon) / 2 , 0);
     }
 }
 
@@ -65,6 +65,7 @@ void Gamestate_ProcessEvent(struct Game *game, struct dosowiskoResources* data, 
 void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 	struct dosowiskoResources *data = malloc(sizeof(struct dosowiskoResources));
     data->bitmap = al_load_bitmap( GetDataFilePath(game, "bg.png"));
+		data->icon = al_load_bitmap( GetDataFilePath(game, "mouse.png"));
 
     data->font = al_load_ttf_font(GetDataFilePath(game, "fonts/MonkeyIsland.ttf"),100,0 );
 	(*progress)(game);
