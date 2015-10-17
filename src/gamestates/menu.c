@@ -193,7 +193,8 @@ void Gamestate_Logic(struct Game *game, struct MenuResources* data) {
 			data->invisible = false;
 		}
 	} else {
-		data->screen_pos += (data->screen_pos) / 4 + 1;
+        data->invisible = false;
+        data->screen_pos += (data->screen_pos) / 4 + 1;
 		if (data->screen_pos > 180) {
 			data->screen_pos = 180;
 		}
@@ -288,7 +289,7 @@ void Gamestate_Start(struct Game *game, struct MenuResources* data) {
 
 	data->title_pos = 0;
 	data->screen_pos = 180;
-	data->invisible = true;
+    data->invisible = true;
 	data->monster_pos = -202;
 	data->starting = false;
 
