@@ -60,8 +60,15 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
         }
     }
 
-    if (data->lost) {
+    if ((data->lost) && (data->hearts > 80)) {
         AnimateCharacter(game, game->mediator.heart, 1);
+        if (game->mediator.heart->pos == 6) {
+            al_play_sample_instance(data->jump_sound);
+        }
+    }
+
+    if (data->lost) {
+        data->hearts++;
     }
 
     if (data->won) {
@@ -95,12 +102,7 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
             SelectSpritesheet(game, data->riot, "win");
 
             TM_AddDelay(data->timeline, 2500);
-            if (game->mediator.lives > 0) {
-                TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
-            } else {
-
-                TM_AddAction(data->timeline, theEnd, NULL, "switchMinigame");
-            }
+            TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
         }
     }
 
@@ -113,7 +115,7 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
             AdvanceLevel(game, false);
             data->lost = true;
             SelectSpritesheet(game, data->riot, "end");
-            TM_AddDelay(data->timeline, 2500);
+            TM_AddDelay(data->timeline, 3500);
             if (game->mediator.lives > 0) {
                 TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
             } else {
@@ -179,7 +181,9 @@ PrintConsole(game, "%f", data->currentpos);
 
     if (data->lost) {
         al_draw_bitmap(data->currentpos < 0 ? data->clouds : data->combined, 0, 0, 0);
-        ShowLevelStatistics(game);
+        if (data->hearts > 80) {
+            ShowLevelStatistics(game);
+        }
     }
 
     //Gamestate_Logic(game, data);
@@ -197,6 +201,8 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->lost = false;
     data->won = false;
+
+    data->hearts = 0;
 
     data->flash = 0;
     data->zadyma = 16;
@@ -251,8 +257,8 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->combined = al_load_bitmap( GetDataFilePath(game, "lollipop/przegrywchop.png"));
 
     data->rocket_sample = al_load_sample( GetDataFilePath(game, "riots/rocket.wav") );
-    data->boom_sample = al_load_sample( GetDataFilePath(game, "riots/boom.wav") );
-    data->jump_sample = al_load_sample( GetDataFilePath(game, "riots/jump.wav") );
+    data->boom_sample = al_load_sample( GetDataFilePath(game, "lollipop/lost.wav") );
+    data->jump_sample = al_load_sample( GetDataFilePath(game, "riots/boom.wav") );
     data->rainbow_sample = al_load_sample( GetDataFilePath(game, "rockets/rainbow.wav") );
     data->wuwu_sample = al_load_sample( GetDataFilePath(game, "riots/vuvu.wav") );
     data->riot_sample = al_load_sample( GetDataFilePath(game, "riots/riot.wav") );

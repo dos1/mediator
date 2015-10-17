@@ -107,16 +107,21 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
                 if (!((tmp->character->x > 140) && (tmp->character->x < 180))) {
                     if (!data->lost) {
                         AdvanceLevel(game, false);
-                    }
 
                     data->lost = true;
                     data->flash = 4;
-                    TM_AddDelay(data->timeline, 2500);
-                    TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
+                    TM_AddDelay(data->timeline, 3500);
+                    if (game->mediator.lives > 0) {
+                        TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
+                    } else {
+                        TM_AddAction(data->timeline, theEnd, NULL, "theEnd");
+                    }
                     data->spawnspeed = 10;
-                    al_play_sample_instance(data->boom_sound);
 
                     al_play_sample_instance(data->riot_sound);
+
+                    }
+                    al_play_sample_instance(data->boom_sound);
 
                 }
 
@@ -162,8 +167,15 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
     AnimateCharacter(game, data->usa_flag, 1);
     AnimateCharacter(game, data->ru_flag, 1);
     AnimateCharacter(game, data->riot, 1);
-    if (data->lost) {
+    if ((data->lost) && (data->hearts > 80)) {
         AnimateCharacter(game, game->mediator.heart, 1);
+        if (game->mediator.heart->pos == 6) {
+            al_play_sample_instance(data->boom_sound);
+        }
+    }
+
+    if (data->lost) {
+        data->hearts++;
     }
 
     if (data->won) {
@@ -197,12 +209,7 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
             SelectSpritesheet(game, data->usa_flag, "poland");
             SelectSpritesheet(game, data->ru_flag, "poland");
             TM_AddDelay(data->timeline, 2500);
-            if (game->mediator.lives > 0) {
-                TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
-            } else {
-
-                TM_AddAction(data->timeline, theEnd, NULL, "switchMinigame");
-            }
+            TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
         }
     }
 
@@ -313,7 +320,7 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
     al_set_target_backbuffer(game->display);
     al_draw_bitmap(data->pixelator, 0, 0, 0);
 
-    if (data->lost) {
+    if ((data->lost) && (data->hearts > 80)) {
         ShowLevelStatistics(game);
     }
 
@@ -332,6 +339,7 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->lost = false;
     data->won = false;
+    data->hearts = 0;
 
     data->flash = 0;
     data->zadyma = 16;

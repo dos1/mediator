@@ -545,7 +545,7 @@ void ShowLevelStatistics(struct Game *game) {
     // show as many bitmaps as there are lives
     // show additional one as a animated character
 
-    al_draw_filled_rectangle(0, 0, 320, 240, al_map_rgba(0, 0, 0, 48));
+    al_draw_filled_rectangle(0, 0, 320, 240, al_map_rgba(0, 0, 0, 192));
 
     int x = 75;
 

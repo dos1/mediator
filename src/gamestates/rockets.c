@@ -203,7 +203,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
                     }
                     data->lost = true;
                     data->flash = 4;
-                    TM_AddDelay(data->timeline, 2500);
+                    TM_AddDelay(data->timeline, 3500);
                     if (game->mediator.lives > 0) {
                         TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
                     } else {
@@ -252,10 +252,17 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
     }
 
 
+    if (data->lost) {
+        data->hearts++;
+    }
+
     AnimateCharacter(game, data->usa_flag, 1);
     AnimateCharacter(game, data->ru_flag, 1);
-    if (data->lost) {
+    if ((data->lost) && (data->hearts > 80)) {
         AnimateCharacter(game, game->mediator.heart, 1);
+        if (game->mediator.heart->pos == 6) {
+            al_play_sample_instance(data->boom_sound);
+        }
     }
 
     if (data->won) {
@@ -402,7 +409,7 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
     al_set_target_backbuffer(game->display);
     al_draw_bitmap(data->pixelator, 0, 0, 0);
 
-    if (data->lost) {
+    if ((data->lost) && (data->hearts > 80)) {
         ShowLevelStatistics(game);
     }
 
@@ -421,6 +428,7 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->lost = false;
     data->won = false;
+    data->hearts = 0;
 
     data->flash = 0;
 

@@ -31,7 +31,7 @@ struct RocketsResources {
             struct Rocket *next, *prev;
         } *rockets_left, *rockets_right;
 
-        int counter;
+        int counter, hearts;
         float cloud_rotation;
 
         struct {
