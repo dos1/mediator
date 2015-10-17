@@ -11,6 +11,8 @@ MACRO(GAMESTATE name)
 ENDMACRO()
 
 GAMESTATE("dosowisko")
+GAMESTATE("burndt")
+
 GAMESTATE("menu")
 
 GAMESTATE("theend")

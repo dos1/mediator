@@ -246,8 +246,10 @@ int main(int argc, char **argv){
 		}
 
 	LoadGamestate(&game, gamestate);
-	game._priv.gamestates->showLoading = false; // we have only one gamestate right now
-	StartGamestate(&game, gamestate);
+    LoadGamestate(&game, "burndt");
+    game._priv.gamestates->showLoading = false; // we have only one gamestate right now
+    game._priv.gamestates->next->showLoading = false; // well, now two
+    StartGamestate(&game, gamestate);
 	free(gamestate);
 
 	char libname[1024] = {};
