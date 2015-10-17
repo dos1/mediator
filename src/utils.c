@@ -237,7 +237,7 @@ void FatalError(struct Game *game, bool fatal, char* format, ...) {
 		al_set_target_backbuffer(game->display);
 		al_clear_to_color(al_map_rgb(0,0,170));
 
-        char *header = "WIARA";
+        char *header = "MEDIATOR";
 
 		al_draw_filled_rectangle(al_get_display_width(game->display)/2 - al_get_text_width(game->_priv.font_bsod, header)/2 - 4, (int)(al_get_display_height(game->display) * 0.32), 4 + al_get_display_width(game->display)/2 + al_get_text_width(game->_priv.font_bsod, header)/2, (int)(al_get_display_height(game->display) * 0.32) + al_get_font_line_height(game->_priv.font_bsod), al_map_rgb(170,170,170));
 
