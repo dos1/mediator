@@ -22,28 +22,14 @@
 struct RocketsResources {
         ALLEGRO_FONT *font;
         ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *combined, *clouds;
-        struct Character *rocket_template, *usa_flag, *ru_flag, *cursor, *rainbow, *riot, *euro;
-
-        struct Rocket {
-            struct Character *character;
-            float dx, dy, modifier;
-            bool blown, bumped;
-            struct Rocket *next, *prev;
-        } *rockets_left, *rockets_right;
+        struct Character *riot;
 
         int counter, hearts;
-        float cloud_rotation;
 
-        struct {
-            bool top, right, left, bottom;
-        } mousemove;
-
-        ALLEGRO_SAMPLE *rocket_sample, *boom_sample, *rainbow_sample, *jump_sample, *wuwu_sample, *riot_sample;
-        ALLEGRO_SAMPLE_INSTANCE *rocket_sound, *boom_sound, *rainbow_sound, *jump_sound, *wuwu_sound, *riot_sound;
+        ALLEGRO_SAMPLE *boom_sample, *rainbow_sample, *jump_sample;
+        ALLEGRO_SAMPLE_INSTANCE *boom_sound, *rainbow_sound, *jump_sound;
 
         bool lost, won;
-
-        int flash, zadyma;
 
         int timelimit, spawnspeed, currentspawn, spawncounter;
 

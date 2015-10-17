@@ -26,7 +26,7 @@
 #include "../timeline.h"
 #include "burndt.h"
 
-int Gamestate_ProgressCount = 5;
+int Gamestate_ProgressCount = 1;
 
 void Gamestate_Logic(struct Game *game, struct burndtResources* data) {
 	data->tick++;
@@ -74,12 +74,12 @@ void Gamestate_ProcessEvent(struct Game *game, struct burndtResources* data, ALL
 void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     struct burndtResources *data = malloc(sizeof(struct burndtResources));
     data->bitmap = al_load_bitmap( GetDataFilePath(game, "burndt.png") );
+    (*progress)(game);
 
     data->sample = al_load_sample( GetDataFilePath(game, "burndt.flac") );
 	data->sound = al_create_sample_instance(data->sample);
 	al_attach_sample_instance_to_mixer(data->sound, game->audio.music);
 	al_set_sample_instance_playmode(data->sound, ALLEGRO_PLAYMODE_ONCE);
-	(*progress)(game);
 
 	return data;
 }

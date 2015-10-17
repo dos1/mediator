@@ -26,7 +26,7 @@
 #include "../timeline.h"
 #include "lollipop.h"
 
-int Gamestate_ProgressCount = 5;
+int Gamestate_ProgressCount = 4;
 
 
 bool switchMinigame(struct Game *game, struct TM_Action *action, enum TM_ActionState state) {
@@ -53,13 +53,6 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
         data->spawncounter = 0;
     }
 
-    if (data->lost) {
-        data->zadyma++;
-        if (data->zadyma >= 255) {
-            data->zadyma = 255;
-        }
-    }
-
     if ((data->lost) && (data->hearts > 80)) {
         AnimateCharacter(game, game->mediator.heart, 1);
         if (game->mediator.heart->pos == 6) {
@@ -71,31 +64,7 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
         data->hearts++;
     }
 
-    if (data->won) {
-        AnimateCharacter(game, data->euro, 1);
-    }
-
     if ((data->counter >= data->timelimit) && (!data->lost) && (!data->won)) {
-        bool stillthere = false;
-        struct Rocket *tmp = data->rockets_left;
-        while (tmp) {
-            if (!tmp->blown) {
-                stillthere = true;
-                break;
-            }
-            tmp = tmp->next;
-        }
-        tmp = data->rockets_right;
-        while (tmp) {
-            if (!tmp->blown) {
-                stillthere = true;
-                break;
-            }
-            tmp = tmp->next;
-        }
-        if (!stillthere) {
-            SelectSpritesheet(game, data->euro, "euro");
-            SetCharacterPosition(game, data->euro, 0, 0, 0);
             al_play_sample_instance(data->rainbow_sound);
             data->won = true;
             AdvanceLevel(game, true);
@@ -103,7 +72,6 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
             TM_AddDelay(data->timeline, 2500);
             TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
-        }
     }
 
     if (data->won) {
@@ -131,7 +99,6 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
     data->counter++;
     data->spawncounter++;
-    data->cloud_rotation += 0.002;
 
     if (!data->lost) {
         data->currentpos += data->dx;
@@ -157,8 +124,6 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
 
         //DrawCharacter(game, data->cursor, al_map_rgb(255,255,255), 0);
     }
-
-PrintConsole(game, "%f", data->currentpos);
 
     if ((!data->lost) && (!data->won)) {
         al_draw_filled_rectangle(78, 5, 78+164, 5+5, al_map_rgb(155, 142, 142));
@@ -191,8 +156,6 @@ PrintConsole(game, "%f", data->currentpos);
 }
 
 void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
-    data->rockets_left = NULL;
-    data->rockets_right = NULL;
 
     data->timelimit = 400 * game->mediator.modificator;
     data->spawnspeed = 80 / game->mediator.modificator;
@@ -204,29 +167,13 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->hearts = 0;
 
-    data->flash = 0;
-    data->zadyma = 16;
-
     data->currentpos = 0;
     data->dx = 0;
-
-    SetCharacterPosition(game, data->usa_flag, 185, 80, 0);
-    SetCharacterPosition(game, data->ru_flag, 25, 80, 0);
-
-    SetCharacterPosition(game, data->cursor, -100, -100, 0);
 
     SetCharacterPosition(game, data->riot, 0, 0, 0);
     SelectSpritesheet(game, data->riot, "win");
 
-    SelectSpritesheet(game, data->cursor, "hand");
-
     data->counter = 0;
-    data->cloud_rotation = 0;
-
-    data->mousemove.bottom = false;
-    data->mousemove.top = false;
-    data->mousemove.left = false;
-    data->mousemove.right = false;
 
     al_grab_mouse(game->display);
 }
@@ -249,6 +196,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->timeline = TM_Init(game, "lollipop");
 
     data->bg = al_load_bitmap( GetDataFilePath(game, "lollipop/bg.png"));
+    (*progress)(game);
 
     data->earth = al_load_bitmap( GetDataFilePath(game, "lollipop/peoples.png"));
     data->earth2 = al_load_bitmap( GetDataFilePath(game, "lollipop/lollipop.png"));
@@ -256,16 +204,10 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->clouds = al_load_bitmap( GetDataFilePath(game, "lollipop/przegrywdziew.png"));
     data->combined = al_load_bitmap( GetDataFilePath(game, "lollipop/przegrywchop.png"));
 
-    data->rocket_sample = al_load_sample( GetDataFilePath(game, "riots/rocket.wav") );
     data->boom_sample = al_load_sample( GetDataFilePath(game, "lollipop/lost.wav") );
     data->jump_sample = al_load_sample( GetDataFilePath(game, "riots/boom.wav") );
     data->rainbow_sample = al_load_sample( GetDataFilePath(game, "rockets/rainbow.wav") );
-    data->wuwu_sample = al_load_sample( GetDataFilePath(game, "riots/vuvu.wav") );
-    data->riot_sample = al_load_sample( GetDataFilePath(game, "riots/riot.wav") );
-
-    data->rocket_sound = al_create_sample_instance(data->rocket_sample);
-    al_attach_sample_instance_to_mixer(data->rocket_sound, game->audio.fx);
-    al_set_sample_instance_playmode(data->rocket_sound, ALLEGRO_PLAYMODE_ONCE);
+    (*progress)(game);
 
     data->boom_sound = al_create_sample_instance(data->boom_sample);
     al_attach_sample_instance_to_mixer(data->boom_sound, game->audio.fx);
@@ -279,57 +221,18 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     al_attach_sample_instance_to_mixer(data->jump_sound, game->audio.fx);
     al_set_sample_instance_playmode(data->jump_sound, ALLEGRO_PLAYMODE_ONCE);
 
-    data->riot_sound = al_create_sample_instance(data->riot_sample);
-    al_attach_sample_instance_to_mixer(data->riot_sound, game->audio.fx);
-    al_set_sample_instance_playmode(data->riot_sound, ALLEGRO_PLAYMODE_ONCE);
-
-    data->wuwu_sound = al_create_sample_instance(data->wuwu_sample);
-    al_attach_sample_instance_to_mixer(data->wuwu_sound, game->audio.fx);
-    al_set_sample_instance_playmode(data->wuwu_sound, ALLEGRO_PLAYMODE_ONCE);
-
-
-    data->cursor = CreateCharacter(game, "cursor");
-    RegisterSpritesheet(game, data->cursor, "hand");
-    LoadSpritesheets(game, data->cursor);
-
-    data->pixelator = al_create_bitmap(320, 180);
-    al_set_target_bitmap(data->pixelator);
-    al_clear_to_color(al_map_rgb(0, 0, 0));
-
-    al_set_target_backbuffer(game->display);
-
-    data->rocket_template = CreateCharacter(game, "rocket");
-    RegisterSpritesheet(game, data->rocket_template, "rock");
-    RegisterSpritesheet(game, data->rocket_template, "bottle");
-    RegisterSpritesheet(game, data->rocket_template, "bottle2");
-    RegisterSpritesheet(game, data->rocket_template, "atom");
-    RegisterSpritesheet(game, data->rocket_template, "boom");
-    RegisterSpritesheet(game, data->rocket_template, "blank");
-    LoadSpritesheets(game, data->rocket_template);
-
-    data->usa_flag = CreateCharacter(game, "kibols");
-    RegisterSpritesheet(game, data->usa_flag, "legia");
-    RegisterSpritesheet(game, data->usa_flag, "poland");
-    LoadSpritesheets(game, data->usa_flag);
-
-    data->ru_flag = CreateCharacter(game, "kibols");
-    RegisterSpritesheet(game, data->ru_flag, "lech");
-    RegisterSpritesheet(game, data->ru_flag, "poland");
-    LoadSpritesheets(game, data->ru_flag);
-
-    data->rainbow = CreateCharacter(game, "rainbow");
-    RegisterSpritesheet(game, data->rainbow, "shine");
-    RegisterSpritesheet(game, data->rainbow, "be");
-    LoadSpritesheets(game, data->rainbow);
+    (*progress)(game);
 
     data->riot = CreateCharacter(game, "loliwin");
     RegisterSpritesheet(game, data->riot, "win");
     RegisterSpritesheet(game, data->riot, "end");
     LoadSpritesheets(game, data->riot);
+    (*progress)(game);
 
-    data->euro = CreateCharacter(game, "euro");
-    RegisterSpritesheet(game, data->euro, "euro");
-    LoadSpritesheets(game, data->euro);
+    data->pixelator = al_create_bitmap(320, 180);
+    al_set_target_bitmap(data->pixelator);
+    al_clear_to_color(al_map_rgb(0, 0, 0));
+    al_set_target_backbuffer(game->display);
 
     return data;
 }
@@ -346,9 +249,7 @@ void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {
     al_destroy_bitmap(data->clouds);
     al_destroy_bitmap(data->combined);
     al_destroy_bitmap(data->pixelator);
-    al_destroy_sample_instance(data->rocket_sound);
     al_destroy_sample_instance(data->boom_sound);
-    al_destroy_sample(data->rocket_sample);
     al_destroy_sample(data->boom_sample);
     // TODO: DestroyCharacters
     free(data);

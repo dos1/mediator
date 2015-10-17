@@ -26,7 +26,7 @@
 #include "../timeline.h"
 #include "riots.h"
 
-int Gamestate_ProgressCount = 5;
+int Gamestate_ProgressCount = 11;
 
 struct Rocket* CreateRocket(struct Game *game, struct RocketsResources* data, struct Rocket* rockets, bool right) {
     struct Rocket *n = malloc(sizeof(struct Rocket));
@@ -392,13 +392,20 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->earth2 = al_load_bitmap( GetDataFilePath(game, "riots/earth2.png"));
 
     data->clouds = al_load_bitmap( GetDataFilePath(game, "riots/fog.png"));
+    (*progress)(game);
 
     data->rocket_sample = al_load_sample( GetDataFilePath(game, "riots/rocket.wav") );
+    (*progress)(game);
     data->boom_sample = al_load_sample( GetDataFilePath(game, "riots/boom.wav") );
+    (*progress)(game);
     data->jump_sample = al_load_sample( GetDataFilePath(game, "riots/jump.wav") );
+    (*progress)(game);
     data->rainbow_sample = al_load_sample( GetDataFilePath(game, "riots/rainbow.wav") );
+    (*progress)(game);
     data->wuwu_sample = al_load_sample( GetDataFilePath(game, "riots/vuvu.wav") );
+    (*progress)(game);
     data->riot_sample = al_load_sample( GetDataFilePath(game, "riots/riot.wav") );
+    (*progress)(game);
 
     data->rocket_sound = al_create_sample_instance(data->rocket_sample);
     al_attach_sample_instance_to_mixer(data->rocket_sound, game->audio.fx);
@@ -428,6 +435,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->cursor = CreateCharacter(game, "cursor");
     RegisterSpritesheet(game, data->cursor, "hand");
     LoadSpritesheets(game, data->cursor);
+    (*progress)(game);
 
     data->pixelator = al_create_bitmap(320, 180);
     al_set_target_bitmap(data->pixelator);
@@ -447,6 +455,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     RegisterSpritesheet(game, data->rocket_template, "boom");
     RegisterSpritesheet(game, data->rocket_template, "blank");
     LoadSpritesheets(game, data->rocket_template);
+    (*progress)(game);
 
     data->usa_flag = CreateCharacter(game, "kibols");
     RegisterSpritesheet(game, data->usa_flag, "legia");
@@ -457,6 +466,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     RegisterSpritesheet(game, data->ru_flag, "lech");
     RegisterSpritesheet(game, data->ru_flag, "poland");
     LoadSpritesheets(game, data->ru_flag);
+    (*progress)(game);
 
     data->rainbow = CreateCharacter(game, "rainbow");
     RegisterSpritesheet(game, data->rainbow, "shine");
@@ -466,6 +476,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->riot = CreateCharacter(game, "riot");
     RegisterSpritesheet(game, data->riot, "riot");
     LoadSpritesheets(game, data->riot);
+    (*progress)(game);
 
     data->euro = CreateCharacter(game, "euro");
     RegisterSpritesheet(game, data->euro, "euro");

@@ -26,7 +26,7 @@
 #include "../timeline.h"
 #include "rockets.h"
 
-int Gamestate_ProgressCount = 5;
+int Gamestate_ProgressCount = 9;
 
 struct Rocket* CreateRocket(struct Game *game, struct RocketsResources* data, struct Rocket* rockets, bool right) {
     struct Rocket *n = malloc(sizeof(struct Rocket));
@@ -477,12 +477,18 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->earth2 = al_load_bitmap( GetDataFilePath(game, "rockets/earth2.png"));
 
     data->clouds = al_load_bitmap( GetDataFilePath(game, "rockets/clouds.png"));
+    (*progress)(game);
 
     data->rocket_sample = al_load_sample( GetDataFilePath(game, "rockets/rocket.wav") );
+    (*progress)(game);
     data->boom_sample = al_load_sample( GetDataFilePath(game, "rockets/boom.wav") );
+    (*progress)(game);
     data->atom_sample = al_load_sample( GetDataFilePath(game, "rockets/atom.wav") );
+    (*progress)(game);
     data->jump_sample = al_load_sample( GetDataFilePath(game, "rockets/jump.wav") );
+    (*progress)(game);
     data->rainbow_sample = al_load_sample( GetDataFilePath(game, "rockets/rainbow.wav") );
+    (*progress)(game);
 
     data->rocket_sound = al_create_sample_instance(data->rocket_sample);
     al_attach_sample_instance_to_mixer(data->rocket_sound, game->audio.fx);
@@ -507,6 +513,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->cursor = CreateCharacter(game, "cursor");
     RegisterSpritesheet(game, data->cursor, "be");
     LoadSpritesheets(game, data->cursor);
+    (*progress)(game);
 
     data->pixelator = al_create_bitmap(320, 180);
     al_set_target_bitmap(data->pixelator);
@@ -525,6 +532,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     RegisterSpritesheet(game, data->rocket_template, "boom");
     RegisterSpritesheet(game, data->rocket_template, "blank");
     LoadSpritesheets(game, data->rocket_template);
+    (*progress)(game);
 
     data->usa_flag = CreateCharacter(game, "flag");
     RegisterSpritesheet(game, data->usa_flag, "usa");
@@ -535,6 +543,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     RegisterSpritesheet(game, data->ru_flag, "ru");
     RegisterSpritesheet(game, data->ru_flag, "brokenru");
     LoadSpritesheets(game, data->ru_flag);
+    (*progress)(game);
 
     data->rainbow = CreateCharacter(game, "rainbow");
     RegisterSpritesheet(game, data->rainbow, "shine");

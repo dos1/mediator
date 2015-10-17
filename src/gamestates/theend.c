@@ -28,7 +28,7 @@
 #include "../timeline.h"
 #include "theend.h"
 
-int Gamestate_ProgressCount = 5;
+int Gamestate_ProgressCount = 1;
 
 void Gamestate_Logic(struct Game *game, struct dosowiskoResources* data) {
 

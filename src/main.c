@@ -354,7 +354,7 @@ int main(int argc, char **argv){
 						// initially draw loading screen with empty bar
 						DrawGamestates(&game);
 						if (tmp->showLoading) {
-							(*game._priv.loading.Draw)(&game, game._priv.loading.data, 0);
+                            (*game._priv.loading.Draw)(&game, game._priv.loading.data, loaded/(float)toLoad);
 						}
 						DrawConsole(&game);
 						al_flip_display();
