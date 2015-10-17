@@ -89,7 +89,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->font = al_load_ttf_font(GetDataFilePath(game, "fonts/MonkeyIsland.ttf"),100,0 );
 	(*progress)(game);
 
-		data->sample = al_load_sample( GetDataFilePath(game, "end.wav") );
+        data->sample = al_load_sample( GetDataFilePath(game, "end.flac") );
 
 		data->sound = al_create_sample_instance(data->sample);
 		al_attach_sample_instance_to_mixer(data->sound, game->audio.fx);

@@ -481,15 +481,15 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->clouds = al_load_bitmap( GetDataFilePath(game, "rockets/clouds.png"));
     (*progress)(game);
 
-    data->rocket_sample = al_load_sample( GetDataFilePath(game, "rockets/rocket.wav") );
+    data->rocket_sample = al_load_sample( GetDataFilePath(game, "bump.flac") );
     (*progress)(game);
-    data->boom_sample = al_load_sample( GetDataFilePath(game, "rockets/boom.wav") );
+    data->boom_sample = al_load_sample( GetDataFilePath(game, "boom.flac") );
     (*progress)(game);
-    data->atom_sample = al_load_sample( GetDataFilePath(game, "rockets/atom.wav") );
+    data->atom_sample = al_load_sample( GetDataFilePath(game, "rockets/atom.flac") );
     (*progress)(game);
-    data->jump_sample = al_load_sample( GetDataFilePath(game, "rockets/jump.wav") );
+    data->jump_sample = al_load_sample( GetDataFilePath(game, "launch.flac") );
     (*progress)(game);
-    data->rainbow_sample = al_load_sample( GetDataFilePath(game, "rockets/rainbow.wav") );
+    data->rainbow_sample = al_load_sample( GetDataFilePath(game, "win.flac") );
     (*progress)(game);
 
     data->rocket_sound = al_create_sample_instance(data->rocket_sample);

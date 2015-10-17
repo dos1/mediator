@@ -207,9 +207,9 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->clouds = al_load_bitmap( GetDataFilePath(game, "lollipop/przegrywdziew.png"));
     data->combined = al_load_bitmap( GetDataFilePath(game, "lollipop/przegrywchop.png"));
 
-    data->boom_sample = al_load_sample( GetDataFilePath(game, "lollipop/lost.wav") );
-    data->jump_sample = al_load_sample( GetDataFilePath(game, "riots/boom.wav") );
-    data->rainbow_sample = al_load_sample( GetDataFilePath(game, "rockets/rainbow.wav") );
+    data->boom_sample = al_load_sample( GetDataFilePath(game, "lollipop/lost.flac") );
+    data->jump_sample = al_load_sample( GetDataFilePath(game, "boom.flac") );
+    data->rainbow_sample = al_load_sample( GetDataFilePath(game, "win.flac") );
     (*progress)(game);
 
     data->boom_sound = al_create_sample_instance(data->boom_sample);

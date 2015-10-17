@@ -392,22 +392,21 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->bg = al_load_bitmap( GetDataFilePath(game, "riots/bg.png"));
 
     data->earth = al_load_bitmap( GetDataFilePath(game, "riots/separator.png"));
-    data->earth2 = al_load_bitmap( GetDataFilePath(game, "riots/earth2.png"));
 
     data->clouds = al_load_bitmap( GetDataFilePath(game, "riots/fog.png"));
     (*progress)(game);
 
-    data->rocket_sample = al_load_sample( GetDataFilePath(game, "riots/rocket.wav") );
+    data->rocket_sample = al_load_sample( GetDataFilePath(game, "bump.flac") );
     (*progress)(game);
-    data->boom_sample = al_load_sample( GetDataFilePath(game, "riots/boom.wav") );
+    data->boom_sample = al_load_sample( GetDataFilePath(game, "boom.flac") );
     (*progress)(game);
-    data->jump_sample = al_load_sample( GetDataFilePath(game, "riots/jump.wav") );
+    data->jump_sample = al_load_sample( GetDataFilePath(game, "launch.flac") );
     (*progress)(game);
-    data->rainbow_sample = al_load_sample( GetDataFilePath(game, "riots/rainbow.wav") );
+    data->rainbow_sample = al_load_sample( GetDataFilePath(game, "win.flac") );
     (*progress)(game);
-    data->wuwu_sample = al_load_sample( GetDataFilePath(game, "riots/vuvu.wav") );
+    data->wuwu_sample = al_load_sample( GetDataFilePath(game, "riots/vuvu.flac") );
     (*progress)(game);
-    data->riot_sample = al_load_sample( GetDataFilePath(game, "riots/riot.wav") );
+    data->riot_sample = al_load_sample( GetDataFilePath(game, "riots/riot.flac") );
     (*progress)(game);
 
     data->rocket_sound = al_create_sample_instance(data->rocket_sample);
@@ -495,7 +494,6 @@ void Gamestate_Stop(struct Game *game, struct RocketsResources* data) {
 void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {
     al_destroy_bitmap(data->bg);
     al_destroy_bitmap(data->earth);
-    al_destroy_bitmap(data->earth2);
     al_destroy_bitmap(data->clouds);
     al_destroy_bitmap(data->combined);
     al_destroy_bitmap(data->pixelator);
