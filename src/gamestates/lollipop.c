@@ -175,7 +175,8 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->counter = 0;
 
-    al_grab_mouse(game->display);
+    al_set_mouse_xy(game->display, al_get_display_width(game->display) / 2, al_get_display_height(game->display) / 2);
+
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, ALLEGRO_EVENT *ev) {
@@ -186,7 +187,7 @@ void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, AL
         int mousex = ev->mouse.dx / (al_get_display_width(game->display) / 320);
 
         data->currentpos += mousex / 3000.0;
-        al_set_mouse_xy(game->display, 240, 120);
+        al_set_mouse_xy(game->display, al_get_display_width(game->display) / 2, al_get_display_height(game->display) / 2);
     }
 }
 
@@ -239,7 +240,6 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
 void Gamestate_Stop(struct Game *game, struct RocketsResources* data) {
     TM_CleanQueue(data->timeline);
-    al_ungrab_mouse();
 }
 
 void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {

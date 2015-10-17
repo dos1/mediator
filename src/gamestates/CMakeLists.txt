@@ -15,7 +15,9 @@ GAMESTATE("burndt")
 
 GAMESTATE("menu")
 
+GAMESTATE("info")
 GAMESTATE("theend")
+
 GAMESTATE("rockets")
 GAMESTATE("lollipop")
 GAMESTATE("riots")

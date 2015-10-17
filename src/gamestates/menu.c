@@ -170,13 +170,13 @@ void Gamestate_Logic(struct Game *game, struct MenuResources* data) {
 
         if (data->monster_pos < -202) {
 			data->starting = false;
-            //LoadGamestate(game, "info");
+            LoadGamestate(game, "theend");
+            LoadGamestate(game, "info");
             LoadGamestate(game, "rockets");
             LoadGamestate(game, "riots");
             LoadGamestate(game, "lollipop");
-            LoadGamestate(game, "theend");
-            StartGamestate(game, "lollipop");
-			StopGamestate(game, "menu");
+            StartGamestate(game, "info");
+            StopGamestate(game, "menu");
 		}
 
 	} else {
@@ -286,6 +286,9 @@ void StartGame(struct Game *game, struct MenuResources *data) {
 
 
 void Gamestate_Start(struct Game *game, struct MenuResources* data) {
+
+    al_ungrab_mouse();
+    if (!game->config.fullscreen) al_show_mouse_cursor(game->display);
 
 	data->title_pos = 0;
 	data->screen_pos = 180;
@@ -410,6 +413,12 @@ void Gamestate_ProcessEvent(struct Game *game, struct MenuResources* data, ALLEG
 						else
 							SetConfigOption(game, "SuperDerpy", "fullscreen", "0");
 						al_set_display_flag(game->display, ALLEGRO_FULLSCREEN_WINDOW, data->options.fullscreen);
+                        game->config.fullscreen = data->options.fullscreen;
+                        if (!data->options.fullscreen) {
+                            al_show_mouse_cursor(game->display);
+                        } else {
+                            al_hide_mouse_cursor(game->display);
+                        }
 						SetupViewport(game);
 						PrintConsole(game, "Fullscreen toggled");
 						break;

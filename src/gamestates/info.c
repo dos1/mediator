@@ -27,50 +27,37 @@
 #include "../utils.h"
 #include "../timeline.h"
 #include "../config.h"
-#include "theend.h"
+#include "info.h"
 
 int Gamestate_ProgressCount = 1;
 
 void Gamestate_Logic(struct Game *game, struct dosowiskoResources* data) {
-
+    data->tick++;
+    if (data->tick > 110) {
+        SwitchGamestate(game, "info", "lollipop");
+    }
 }
 
 void Gamestate_Draw(struct Game *game, struct dosowiskoResources* data) {
     al_draw_bitmap(data->bitmap, 0, 0, 0);
-    char text[255];
-    snprintf(text, 255, "%d", game->mediator.score);
-    DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), 320/2, 20, ALLEGRO_ALIGN_CENTER, "Score:");
-    DrawTextWithShadow(data->font, al_map_rgb(255,255,255), 320/2, 30, ALLEGRO_ALIGN_CENTER, text);
-    snprintf(text, 255, "High score: %d", data->score);
-    DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), 320/2, 140, ALLEGRO_ALIGN_CENTER, text);
-    DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), 320/2, 162, ALLEGRO_ALIGN_CENTER, "Press RETURN");
+    if ((data->tick / 20) % 2 == 0) {
+        DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), 320/2, 180/2, ALLEGRO_ALIGN_CENTER, "Use mouse");
+    }
 }
 
 void Gamestate_Start(struct Game *game, struct dosowiskoResources* data) {
-    al_set_sample_instance_gain(game->muzyczka.instance.drums, 0.0);
-    al_set_sample_instance_gain(game->muzyczka.instance.fg, 0.0);
-    al_set_sample_instance_gain(game->muzyczka.instance.bg, 1.5);
-
-    char *end = "";
-    data->score = strtol(GetConfigOptionDefault(game, "Mediator", "score", "0"), &end, 10);
-
-    if (game->mediator.score > data->score) {
-        char text[255];
-        snprintf(text, 255, "%d", game->mediator.score);
-        SetConfigOption(game, "Mediator", "score", text);
-    }
-    al_ungrab_mouse();
-    if (!game->config.fullscreen) al_show_mouse_cursor(game->display);
-
+    data->tick = 0;
+    al_grab_mouse(game->display);
+    al_hide_mouse_cursor(game->display);
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct dosowiskoResources* data, ALLEGRO_EVENT *ev) {
     //TM_HandleEvent(data->timeline, ev);
 	if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ESCAPE)) {
-        SwitchGamestate(game, "theend", "menu");
+        SwitchGamestate(game, "info", "lollipop");
 	}
     if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ENTER)) {
-        SwitchGamestate(game, "theend", "menu");
+        SwitchGamestate(game, "info", "lollipop");
     }
 }
 

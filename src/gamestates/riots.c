@@ -347,7 +347,7 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
     SetCharacterPosition(game, data->usa_flag, 185, 80, 0);
     SetCharacterPosition(game, data->ru_flag, 25, 80, 0);
 
-    SetCharacterPosition(game, data->cursor, -100, -100, 0);
+    SetCharacterPosition(game, data->cursor, 320/2, 50, 0);
 
     SetCharacterPosition(game, data->riot, 0, 0, 0);
     SelectSpritesheet(game, data->riot, "riot");
@@ -364,6 +364,9 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
     data->mousemove.top = false;
     data->mousemove.left = false;
     data->mousemove.right = false;
+
+    al_set_mouse_xy(game->display, al_get_display_width(game->display) / 2, al_get_display_height(game->display) / 2);
+
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, ALLEGRO_EVENT *ev) {

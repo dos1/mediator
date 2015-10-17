@@ -170,8 +170,8 @@ int main(int argc, char **argv){
 	al_set_display_icon(game.display, icon);
 	al_destroy_bitmap(icon);
 
-	if (game.config.fullscreen) al_hide_mouse_cursor(game.display);
-	al_inhibit_screensaver(true);
+    if (game.config.fullscreen) al_hide_mouse_cursor(game.display);
+    al_inhibit_screensaver(true);
 
 	al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR);
 
