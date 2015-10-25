@@ -21,8 +21,8 @@
 
 struct RocketsResources {
         ALLEGRO_FONT *font;
-        ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *combined, *clouds;
-        struct Character *riot;
+        ALLEGRO_BITMAP *bg, *earth, *earth2, *earth3, *earth4, *pixelator, *combined, *clouds;
+        struct Character *riot, *faces;
 
         int counter, hearts;
 
@@ -30,6 +30,8 @@ struct RocketsResources {
         ALLEGRO_SAMPLE_INSTANCE *boom_sound, *rainbow_sound, *jump_sound;
 
         bool lost, won;
+
+        int oldstate;
 
         int timelimit, spawnspeed, currentspawn, spawncounter;
 

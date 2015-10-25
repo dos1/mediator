@@ -97,6 +97,24 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
     }
 
+    int newstate = 0;
+    if (data->currentpos < -0.05) {
+        newstate = -1;
+    } else if (data->currentpos > 0.05) {
+        newstate = 1;
+    }
+
+    if (data->oldstate != newstate) {
+        if (newstate == 0) {
+            SelectSpritesheet(game, data->faces, "center");
+        } else if (newstate == 1) {
+            SelectSpritesheet(game, data->faces, "right");
+        } else {
+            SelectSpritesheet(game, data->faces, "left");
+        }
+        data->oldstate = newstate;
+    }
+
     data->counter++;
     data->spawncounter++;
 
@@ -119,8 +137,15 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
     }
 
     if ((!data->lost) && (!data->won)) {
-        al_draw_rotated_bitmap(data->earth2, 158, 140, 158, 140, data->currentpos, 0);
+        if (data->counter / (float)data->timelimit < 0.5) {
+            al_draw_rotated_bitmap(data->earth2, 158, 140, 158, 140, data->currentpos, 0);
+        } else if (data->counter / (float)data->timelimit < 0.8) {
+            al_draw_rotated_bitmap(data->earth3, 158, 140, 158, 140, data->currentpos, 0);
+        } else {
+            al_draw_rotated_bitmap(data->earth4, 158, 140, 158, 140, data->currentpos, 0);
+        }
         al_draw_bitmap(data->earth, 0, 0, 0);
+        DrawCharacter(game, data->faces, al_map_rgb(255,255,255), 0);
 
         //DrawCharacter(game, data->cursor, al_map_rgb(255,255,255), 0);
     }
@@ -172,6 +197,10 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     SetCharacterPosition(game, data->riot, 0, 0, 0);
     SelectSpritesheet(game, data->riot, "win");
+    SelectSpritesheet(game, data->faces, "center");
+    SetCharacterPosition(game, data->faces, 0, 0, 0);
+
+    data->oldstate = 0;
 
     data->counter = 0;
 
@@ -203,6 +232,8 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
     data->earth = al_load_bitmap( GetDataFilePath(game, "lollipop/peoples.png"));
     data->earth2 = al_load_bitmap( GetDataFilePath(game, "lollipop/lollipop.png"));
+    data->earth3 = al_load_bitmap( GetDataFilePath(game, "lollipop/lollipop2.png"));
+    data->earth4 = al_load_bitmap( GetDataFilePath(game, "lollipop/lollipop3.png"));
 
     data->clouds = al_load_bitmap( GetDataFilePath(game, "lollipop/przegrywdziew.png"));
     data->combined = al_load_bitmap( GetDataFilePath(game, "lollipop/przegrywchop.png"));
@@ -232,6 +263,13 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     LoadSpritesheets(game, data->riot);
     (*progress)(game);
 
+    data->faces = CreateCharacter(game, "faces");
+    RegisterSpritesheet(game, data->faces, "left");
+    RegisterSpritesheet(game, data->faces, "center");
+    RegisterSpritesheet(game, data->faces, "right");
+    LoadSpritesheets(game, data->faces);
+    (*progress)(game);
+
     data->pixelator = al_create_bitmap(320, 180);
     al_set_target_bitmap(data->pixelator);
     al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -248,12 +286,16 @@ void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {
     al_destroy_bitmap(data->bg);
     al_destroy_bitmap(data->earth);
     al_destroy_bitmap(data->earth2);
+    al_destroy_bitmap(data->earth3);
+    al_destroy_bitmap(data->earth4);
     al_destroy_bitmap(data->clouds);
     al_destroy_bitmap(data->combined);
     al_destroy_bitmap(data->pixelator);
     al_destroy_sample_instance(data->boom_sound);
     al_destroy_sample(data->boom_sample);
-    // TODO: DestroyCharacters
+    DestroyCharacter(game, data->faces);
+    DestroyCharacter(game, data->riot);
+    // TODO: Destroy all the stuff
     free(data);
 }
 
