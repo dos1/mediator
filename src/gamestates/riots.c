@@ -110,6 +110,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 
                     data->lost = true;
                     data->flash = 4;
+										data->counter = 0;
                     TM_AddDelay(data->timeline, 3500);
                     if (game->mediator.lives > 0) {
                         TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
@@ -293,10 +294,12 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
 
 
     if (data->lost) {
-        al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 2, 0, 0);
-    } else {
-        al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 3, 0, 0);
-    }
+				al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 2, 0, 0);
+				al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 2 + 640, 0, 0);
+		} else {
+				al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 3, 0, 0);
+				al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 3 + 640, 0, 0);
+		}
 
 
     if ((!data->lost) && (!data->won)) {
