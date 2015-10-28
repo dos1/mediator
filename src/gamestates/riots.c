@@ -256,14 +256,6 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
 void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
 
-    al_set_target_bitmap(data->combined);
-    al_clear_to_color(al_map_rgba(0,0,0,0));
-    //al_draw_bitmap(data->clouds, -140, -210, 0);
-    //al_set_separate_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA, ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_ZERO);
-    al_set_blender(ALLEGRO_ADD, ALLEGRO_ZERO, ALLEGRO_INVERSE_ALPHA);
-    al_draw_rotated_bitmap(data->clouds, 250, 250, -90 + 250, -160 + 250 + 20, data->cloud_rotation, 0);
-    al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-
     al_set_target_bitmap(data->pixelator);
 
     if (!data->lost) {
@@ -443,10 +435,6 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     al_set_target_bitmap(data->pixelator);
     al_clear_to_color(al_map_rgb(0, 0, 0));
 
-    data->combined = al_create_bitmap(320, 180);
-    al_set_target_bitmap(data->combined);
-    al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-
     al_set_target_backbuffer(game->display);
 
     data->rocket_template = CreateCharacter(game, "rocket");
@@ -495,7 +483,6 @@ void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {
     al_destroy_bitmap(data->bg);
     al_destroy_bitmap(data->earth);
     al_destroy_bitmap(data->clouds);
-    al_destroy_bitmap(data->combined);
     al_destroy_bitmap(data->pixelator);
     al_destroy_sample_instance(data->rocket_sound);
     al_destroy_sample_instance(data->boom_sound);

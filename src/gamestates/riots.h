@@ -21,7 +21,7 @@
 
 struct RocketsResources {
         ALLEGRO_FONT *font;
-        ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *combined, *clouds;
+        ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *clouds;
         struct Character *rocket_template, *usa_flag, *ru_flag, *cursor, *rainbow, *riot, *euro;
 
         struct Rocket {
