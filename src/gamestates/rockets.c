@@ -236,7 +236,8 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
     if ((data->spawncounter == data->currentspawn) && ((data->counter < data->timelimit) || (data->lost))) {
-        if (rand() % 2 == 0) {
+				data->next = !data->next;
+				if (data->next) {
             data->rockets_left = CreateRocket(game, data, data->rockets_left, false);
         } else {
             data->rockets_right = CreateRocket(game, data, data->rockets_right, true);
