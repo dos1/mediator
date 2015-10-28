@@ -34,7 +34,7 @@ int Gamestate_ProgressCount = 1;
 void Gamestate_Logic(struct Game *game, struct dosowiskoResources* data) {
     data->tick++;
 		if (data->tick > 86) {
-        SwitchGamestate(game, "info", "lollipop");
+				SwitchGamestate(game, "info", "lollipop");
     }
 }
 
@@ -55,10 +55,10 @@ void Gamestate_Start(struct Game *game, struct dosowiskoResources* data) {
 void Gamestate_ProcessEvent(struct Game *game, struct dosowiskoResources* data, ALLEGRO_EVENT *ev) {
     //TM_HandleEvent(data->timeline, ev);
 	if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ESCAPE)) {
-        SwitchGamestate(game, "info", "lollipop");
+				SwitchGamestate(game, "info", "lollipop");
 	}
     if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ENTER)) {
-        SwitchGamestate(game, "info", "lollipop");
+				SwitchGamestate(game, "info", "lollipop");
     }
 }
 

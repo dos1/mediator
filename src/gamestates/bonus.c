@@ -20,11 +20,12 @@
  */
 
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_color.h>
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include "../utils.h"
 #include "../timeline.h"
-#include "riots.h"
+#include "bonus.h"
 
 int Gamestate_ProgressCount = 11;
 
@@ -39,8 +40,8 @@ struct Rocket* CreateRocket(struct Game *game, struct RocketsResources* data, st
     n->character = CreateCharacter(game, "rocket");
     n->character->spritesheets = data->rocket_template->spritesheets;
     n->character->shared = true;
-    SelectSpritesheet(game, n->character, rand() % 2 ? "rock" : rand() % 2 ? "bottle" : "bottle2");
-		SetCharacterPosition(game, n->character, (right ? 250 : 50) + rand() % 90 - 40, 100, right ? -0.33 : 0.33);
+		SelectSpritesheet(game, n->character, rand() % 2 ? "usa" : "ru");
+		SetCharacterPosition(game, n->character, (data->ru_flag->x + 40) + rand() % 100 - 50, 100, right ? -0.33 : 0.33);
     al_play_sample_instance(data->jump_sound);
     data->currentspawn = data->spawnspeed + (data->spawnspeed * 0.1) * (float)(rand() / (float)RAND_MAX * 2) - (data->spawnspeed * 0.05);
 
@@ -69,16 +70,15 @@ void DrawRockets(struct Game *game, struct RocketsResources* data, struct Rocket
 
 bool switchMinigame(struct Game *game, struct TM_Action *action, enum TM_ActionState state) {
         if (state == TM_ACTIONSTATE_START) {
-            StopGamestate(game, "riots");
-						game->mediator.next = "rockets";
-						StartGamestate(game, GetAbstractIsItBonusLevelTimeNowFactoryProvider(game) ? "bonus" : "rockets");
+						StopGamestate(game, "bonus");
+						StartGamestate(game, game->mediator.next);
         }
         return true;
 }
 
 bool theEnd(struct Game *game, struct TM_Action *action, enum TM_ActionState state) {
         if (state == TM_ACTIONSTATE_START) {
-            StopGamestate(game, "riots");
+						StopGamestate(game, "bonus");
             StartGamestate(game, "theend");
         }
         return true;
@@ -94,10 +94,11 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
         MoveCharacter(game, tmp->character, tmp->dx, tmp->dy, tmp->blown ? 0 : ((tmp->dx > 0) ? 0.0166 : -0.0166));
         AnimateCharacter(game, tmp->character, 1);
 
-        if (!tmp->blown) {
+				if (!tmp->blown) {
 
-            if (((((tmp->character->y > 90) && (rand() % 4 == 0) && (tmp->dy > 0)))) && (tmp->character->x > -20 && tmp->character->x < 320)) {
-                tmp->blown = true;
+						//if (((((tmp->character->y > 90) && (rand() % 4 == 0) && (tmp->dy > 0)))) && (tmp->character->x > -20 && tmp->character->x < 320)) {
+						if ((tmp->character->x > 200) && (tmp->character->y < 50) && (tmp->character->x < 260) && (rand() % 4 == 0)) {
+								tmp->blown = true;
                 tmp->modifier = 0;
                 tmp->character->angle = 0;
                 tmp->dx = 0;
@@ -105,56 +106,22 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
                 SelectSpritesheet(game, tmp->character, "boom");
                 MoveCharacter(game, tmp->character, 5, 5, 0);
 
-                if (!((tmp->character->x > 140) && (tmp->character->x < 180))) {
-                    if (!data->lost) {
-                        AdvanceLevel(game, false);
+								data->lizakpowa--;
 
-                    data->lost = true;
-                    data->flash = 4;
-										data->counter = 0;
-                    TM_AddDelay(data->timeline, 3500);
-                    if (game->mediator.lives > 0) {
-                        TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
-                    } else {
-                        TM_AddAction(data->timeline, theEnd, NULL, "theEnd");
-                    }
-                    data->spawnspeed = 10;
-
-                    al_play_sample_instance(data->riot_sound);
-
-                    }
-                    al_play_sample_instance(data->boom_sound);
-
-                }
-
-            } else if (tmp->character->x < -20 || tmp->character->x > 320) {
-                tmp->blown = true;
-                tmp->modifier = 0;
-                tmp->character->angle = 0;
-                tmp->dx = 0;
-                tmp->dy = 0;
-                SelectSpritesheet(game, tmp->character, "blank");
-                al_play_sample_instance(data->boom_sound);
-            }
-        }
+						}
+				}
         tmp=tmp->next;
     }
 }
 
 void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 
-    if ((data->spawncounter == data->currentspawn) && ((data->counter < data->timelimit) || (data->lost))) {
-        if (rand() % 2 == 0) {
-            data->rockets_left = CreateRocket(game, data, data->rockets_left, false);
-        } else {
-            data->rockets_right = CreateRocket(game, data, data->rockets_right, true);
-        }
-        data->spawncounter = 0;
-    }
-
     if (!data->flash) {
+			if ((!data->lost) && (!data->won)) {
+
         UpdateRockets(game, data, data->rockets_left);
         UpdateRockets(game, data, data->rockets_right);
+			}
     } else {
         data->flash--;
     }
@@ -176,82 +143,46 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
         }
     }
 
-    if (data->lost) {
-        data->hearts++;
-    }
 
-    if (data->won) {
-        AnimateCharacter(game, data->euro, 1);
-    }
+		if ((data->lizakpowa <= 0) && (!data->won) && (!data->lost)) {
+			data->won = true;
+			al_play_sample_instance(data->rainbow_sound);
+			al_play_sample_instance(data->boom_sound);
+			data->flash = 4;
+			game->mediator.lives++;
+			AdvanceLevel(game, true);
+			MoveCharacter(game, data->ru_flag, 0, -24, 0);
+			SelectSpritesheet(game, data->ru_flag, "lollipop");
+			TM_AddDelay(data->timeline, 2500);
+			TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
+		}
 
     if ((data->counter >= data->timelimit) && (!data->lost) && (!data->won)) {
-        bool stillthere = false;
-        struct Rocket *tmp = data->rockets_left;
-        while (tmp) {
-            if (!tmp->blown) {
-                stillthere = true;
-                break;
-            }
-            tmp = tmp->next;
-        }
-        tmp = data->rockets_right;
-        while (tmp) {
-            if (!tmp->blown) {
-                stillthere = true;
-                break;
-            }
-            tmp = tmp->next;
-        }
-        if (!stillthere) {
-            SelectSpritesheet(game, data->euro, "euro");
-            SetCharacterPosition(game, data->euro, 0, 0, 0);
-            al_play_sample_instance(data->wuwu_sound);
-            data->won = true;
-            AdvanceLevel(game, true);
-            SelectSpritesheet(game, data->usa_flag, "poland");
-            SelectSpritesheet(game, data->ru_flag, "poland");
-            TM_AddDelay(data->timeline, 2500);
-            TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
-        }
+
+				data->lost = true;
+				game->mediator.lives++;
+				AdvanceLevel(game, false);
+
+				SelectSpritesheet(game, data->ru_flag, "cry");
+				al_play_sample_instance(data->wuwu_sound);
+
+				TM_AddDelay(data->timeline, 1500);
+				TM_AddAction(data->timeline, switchMinigame, NULL, "switchMinigame");
+
+
     }
 
-
-    void iterate(struct Rocket *start) {
-        struct Rocket *tmp1 = start;
-        while (tmp1) {
-            if (!tmp1->blown) {
-              //  if (CheckCollision(game, data, data->cursor, tmp1->character)) {
-
-                if ( (abs(tmp1->character->y - data->cursor->y) <= 10) &&
-                     (((tmp1->character->x <= data->cursor->x + al_get_bitmap_width(data->cursor->bitmap)) && (tmp1->character->x + al_get_bitmap_width(tmp1->character->bitmap) >= data->cursor->x + al_get_bitmap_width(data->cursor->bitmap)))  ||
-
-                     ((tmp1->character->x + al_get_bitmap_width(tmp1->character->bitmap) >= data->cursor->x) && (tmp1->character->x + al_get_bitmap_width(tmp1->character->bitmap) <= data->cursor->x + al_get_bitmap_width(data->cursor->bitmap))) )) {
-
-                    if (tmp1->character->y < data->cursor->y) {
-                        tmp1->dx = 0;
-                        tmp1->dy = 0;
-                        tmp1->modifier = 0;
-                        tmp1->blown = true;
-                        SelectSpritesheet(game, tmp1->character, "blank");
-                    } else if (tmp1->dy < 0) {
-                        tmp1->dy *= -1;
-                    }
-
-                    al_play_sample_instance(data->rocket_sound);
-
-                }
-
-            }
-            tmp1 = tmp1->next;
-        }
-
-    }
-    iterate(data->rockets_left);
-    iterate(data->rockets_right);
-
-    data->counter++;
+		if (!data->won) {
+			data->counter++;
+		}
     data->spawncounter++;
     data->cloud_rotation += 0.002;
+		data->tick ++;
+
+		data->color += 2;
+		if (data->color >= 360) {
+			data->color = 0;
+		}
 
     TM_Process(data->timeline);
 }
@@ -260,48 +191,31 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
 
     al_set_target_bitmap(data->pixelator);
 
-    if (!data->lost) {
-        al_draw_bitmap(data->bg, 0, 0, 0);
-        //al_draw_bitmap(data->earth2, 0, 0, 0);
-        //al_draw_bitmap(data->combined, 0, 0, 0);
-    } else if (!data->won) {
-        al_draw_tinted_bitmap(data->bg, al_map_rgb(255, 192, 128), 0, 0, 0);
-        //al_draw_tinted_bitmap(data->earth2, al_map_rgb(255, 192, 128), 0, 0, 0);
-        //al_draw_tinted_bitmap(data->combined, al_map_rgb(255, 192, 128),  0, 0, 0);
-    } else {
-        al_draw_bitmap(data->bg, 0, 0, 0);
-        al_draw_filled_rectangle(0, 0, 320, 180, al_map_rgba(255,255,255, 64));
-    }
+		al_draw_tinted_bitmap(data->bg, al_color_hsv(abs(data->color), 0.498, 1.0), 0, 0, 0);
+
 
     if (data->won) {
-        DrawCharacter(game, data->euro, al_map_rgb(255,255,255), 0);
+			 // DrawCharacter(game, data->euro, al_map_rgb(255,255,255), 0);
     }
 
-
-    if ((!data->lost) && (!data->won)) {
-        DrawCharacter(game, data->cursor, al_map_rgb(255,255,255), 0);
-    }
-
-    DrawRockets(game, data, data->rockets_left);
-    DrawRockets(game, data, data->rockets_right);
-
-    if (data->lost) {
-        DrawCharacter(game, data->riot, al_map_rgb(255,255,255), 0);
-    } else {
-        DrawCharacter(game, data->usa_flag, al_map_rgb(255,255,255), 1);
-        DrawCharacter(game, data->ru_flag, al_map_rgb(255,255,255), 0);
-        al_draw_bitmap(data->earth, 5, 50, 0);
-    }
-
-
-    if (data->lost) {
-				al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 2, 0, 0);
-				al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 2 + 640, 0, 0);
-		} else {
-				al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 3, 0, 0);
-				al_draw_tinted_bitmap(data->clouds, al_map_rgba(data->zadyma, data->zadyma, data->zadyma, data->zadyma), -data->counter / 3 + 640, 0, 0);
+		if (data->lizakpowa > 30) {
+			al_draw_rotated_bitmap(data->loli, 200, 200, 370, 65, -1, 0);
+		} else if (data->lizakpowa > 15) {
+			al_draw_rotated_bitmap(data->loli2, 200, 200, 370, 65, -1, 0);
+		} else if (data->lizakpowa > 0) {
+			al_draw_rotated_bitmap(data->loli3, 200, 200, 370, 65, -1, 0);
 		}
 
+		if ((!data->lost) && (!data->won)) {
+
+
+		DrawRockets(game, data, data->rockets_left);
+    DrawRockets(game, data, data->rockets_right);
+
+		}
+
+
+        DrawCharacter(game, data->ru_flag, al_map_rgb(255,255,255), 0);
 
     if ((!data->lost) && (!data->won)) {
         al_draw_filled_rectangle(78, 5, 78+164, 5+5, al_map_rgb(155, 142, 142));
@@ -320,6 +234,13 @@ void Gamestate_Draw(struct Game *game, struct RocketsResources* data) {
         ShowLevelStatistics(game);
     }
 
+		if (data->tick < 86) {
+
+			if ((data->tick / 11) % 2 == 0) {
+					DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), 320 /2 , 45 , ALLEGRO_ALIGN_CENTER, "BONUS LEVEL");
+			}
+		}
+
     //Gamestate_Logic(game, data);
 
 }
@@ -328,7 +249,9 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
     data->rockets_left = NULL;
     data->rockets_right = NULL;
 
-    data->timelimit = 400 * game->mediator.modificator;
+		data->tick = 0;
+
+		data->timelimit = 420 / game->mediator.modificator;
     data->spawnspeed = 80 / game->mediator.modificator;
     data->currentspawn = data->spawnspeed;
     data->spawncounter = data->spawnspeed - 20;
@@ -339,11 +262,12 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     data->flash = 0;
     data->zadyma = 16;
+		data->lizakpowa = 60;
 
     SetCharacterPosition(game, data->usa_flag, 185, 80, 0);
     SetCharacterPosition(game, data->ru_flag, 25, 80, 0);
 
-    SetCharacterPosition(game, data->cursor, 320/2, 50, 0);
+		SetCharacterPosition(game, data->cursor, -320, 50, 0);
 
     SetCharacterPosition(game, data->riot, 0, 0, 0);
     SelectSpritesheet(game, data->riot, "riot");
@@ -363,33 +287,48 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
 
     al_set_mouse_xy(game->display, al_get_display_width(game->display) / 2, al_get_display_height(game->display) / 2);
 
+		al_set_sample_instance_gain(game->muzyczka.instance.bg, 0.0);
+		al_set_sample_instance_gain(game->muzyczka.instance.fg, 0.0);
+		al_set_sample_instance_gain(data->riot_sound, 1.5);
+		al_set_sample_instance_gain(data->wuwu_sound, 1.25);
+		al_play_sample_instance(data->riot_sound);
+		al_play_sample_instance(data->wuwu_sound);
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, ALLEGRO_EVENT *ev) {
     TM_HandleEvent(data->timeline, ev);
     if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ESCAPE)) {
-				SwitchGamestate(game, "riots", "theend");
+				SwitchGamestate(game, "bonus", "theend");
     } else if (ev->type == ALLEGRO_EVENT_MOUSE_AXES) {
         int mousex = ev->mouse.x / (al_get_display_width(game->display) / 320);
-        int mousey = 50;
+				int mousey = 80;
         data->mousemove.right = mousex > data->cursor->x;
         data->mousemove.top = mousey < data->cursor->y;
         data->mousemove.left = mousex < data->cursor->x;
         data->mousemove.bottom = mousey > data->cursor->y;
-        SetCharacterPosition(game, data->cursor, mousex, mousey , 0); // FIXMEEEE!
-    }
+				if ((!data->won)&& (!data->lost)) {
+					SetCharacterPosition(game, data->ru_flag, mousex, mousey , 0); // FIXMEEEE!
+				}
+		} else if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+			if ((!data->won)&& (!data->lost)) {
+			 data->rockets_left = CreateRocket(game, data, data->rockets_left, false);
+			}
+		}
 }
 
 void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     struct RocketsResources *data = malloc(sizeof(struct RocketsResources));
 
-    data->timeline = TM_Init(game, "riots");
+		data->timeline = TM_Init(game, "bonus");
 
-    data->bg = al_load_bitmap( GetDataFilePath(game, "riots/bg.png"));
+		data->bg = al_load_bitmap( GetDataFilePath(game, "bg.png"));
 
     data->earth = al_load_bitmap( GetDataFilePath(game, "riots/separator.png"));
 
-    data->clouds = al_load_bitmap( GetDataFilePath(game, "riots/fog.png"));
+		data->loli = al_load_bitmap( GetDataFilePath(game, "lollipop/lollipop.png"));
+		data->loli2 = al_load_bitmap( GetDataFilePath(game, "lollipop/lollipop2.png"));
+		data->loli3 = al_load_bitmap( GetDataFilePath(game, "lollipop/lollipop3.png"));
+
     (*progress)(game);
 
     data->rocket_sample = al_load_sample( GetDataFilePath(game, "bump.flac") );
@@ -400,9 +339,9 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     (*progress)(game);
     data->rainbow_sample = al_load_sample( GetDataFilePath(game, "win.flac") );
     (*progress)(game);
-    data->wuwu_sample = al_load_sample( GetDataFilePath(game, "riots/vuvu.flac") );
+		data->wuwu_sample = al_load_sample( GetDataFilePath(game, "warning.flac") );
     (*progress)(game);
-    data->riot_sample = al_load_sample( GetDataFilePath(game, "riots/riot.flac") );
+		data->riot_sample = al_load_sample( GetDataFilePath(game, "bonus.flac") );
     (*progress)(game);
 
     data->rocket_sound = al_create_sample_instance(data->rocket_sample);
@@ -416,14 +355,15 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->rainbow_sound = al_create_sample_instance(data->rainbow_sample);
     al_attach_sample_instance_to_mixer(data->rainbow_sound, game->audio.fx);
     al_set_sample_instance_playmode(data->rainbow_sound, ALLEGRO_PLAYMODE_ONCE);
+		al_set_sample_instance_gain(data->rainbow_sound, 1.25);
 
     data->jump_sound = al_create_sample_instance(data->jump_sample);
     al_attach_sample_instance_to_mixer(data->jump_sound, game->audio.fx);
     al_set_sample_instance_playmode(data->jump_sound, ALLEGRO_PLAYMODE_ONCE);
 
     data->riot_sound = al_create_sample_instance(data->riot_sample);
-    al_attach_sample_instance_to_mixer(data->riot_sound, game->audio.fx);
-    al_set_sample_instance_playmode(data->riot_sound, ALLEGRO_PLAYMODE_ONCE);
+		al_attach_sample_instance_to_mixer(data->riot_sound, game->audio.music);
+		al_set_sample_instance_playmode(data->riot_sound, ALLEGRO_PLAYMODE_LOOP);
 
     data->wuwu_sound = al_create_sample_instance(data->wuwu_sample);
     al_attach_sample_instance_to_mixer(data->wuwu_sound, game->audio.fx);
@@ -442,10 +382,9 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     al_set_target_backbuffer(game->display);
 
     data->rocket_template = CreateCharacter(game, "rocket");
-    RegisterSpritesheet(game, data->rocket_template, "rock");
-    RegisterSpritesheet(game, data->rocket_template, "bottle");
-    RegisterSpritesheet(game, data->rocket_template, "bottle2");
-    RegisterSpritesheet(game, data->rocket_template, "atom");
+		RegisterSpritesheet(game, data->rocket_template, "usa");
+		RegisterSpritesheet(game, data->rocket_template, "ru");
+		RegisterSpritesheet(game, data->rocket_template, "atom");
     RegisterSpritesheet(game, data->rocket_template, "boom");
     RegisterSpritesheet(game, data->rocket_template, "blank");
     LoadSpritesheets(game, data->rocket_template);
@@ -453,13 +392,15 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
     data->usa_flag = CreateCharacter(game, "kibols");
     RegisterSpritesheet(game, data->usa_flag, "legia");
-    RegisterSpritesheet(game, data->usa_flag, "poland");
-    LoadSpritesheets(game, data->usa_flag);
+		RegisterSpritesheet(game, data->usa_flag, "lollipop");
+		RegisterSpritesheet(game, data->usa_flag, "cry");
+		LoadSpritesheets(game, data->usa_flag);
 
     data->ru_flag = CreateCharacter(game, "kibols");
     RegisterSpritesheet(game, data->ru_flag, "lech");
-    RegisterSpritesheet(game, data->ru_flag, "poland");
-    LoadSpritesheets(game, data->ru_flag);
+		RegisterSpritesheet(game, data->ru_flag, "lollipop");
+		RegisterSpritesheet(game, data->ru_flag, "cry");
+		LoadSpritesheets(game, data->ru_flag);
     (*progress)(game);
 
     data->rainbow = CreateCharacter(game, "rainbow");
@@ -481,14 +422,19 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
 void Gamestate_Stop(struct Game *game, struct RocketsResources* data) {
     TM_CleanQueue(data->timeline);
+		al_set_sample_instance_gain(game->muzyczka.instance.bg, 1.5);
+		al_set_sample_instance_gain(game->muzyczka.instance.fg, 1.5);
+		al_stop_sample_instance(data->riot_sound);
 }
 
 void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {
     al_destroy_bitmap(data->bg);
     al_destroy_bitmap(data->earth);
-    al_destroy_bitmap(data->clouds);
     al_destroy_bitmap(data->pixelator);
-    al_destroy_sample_instance(data->rocket_sound);
+		al_destroy_bitmap(data->loli);
+		al_destroy_bitmap(data->loli2);
+		al_destroy_bitmap(data->loli3);
+		al_destroy_sample_instance(data->rocket_sound);
     al_destroy_sample_instance(data->boom_sound);
     al_destroy_sample(data->rocket_sample);
     al_destroy_sample(data->boom_sample);

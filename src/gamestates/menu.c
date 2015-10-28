@@ -175,7 +175,8 @@ void Gamestate_Logic(struct Game *game, struct MenuResources* data) {
             LoadGamestate(game, "rockets");
             LoadGamestate(game, "riots");
             LoadGamestate(game, "lollipop");
-            StartGamestate(game, "info");
+						LoadGamestate(game, "bonus");
+						StartGamestate(game, "info");
             StopGamestate(game, "menu");
         }
 

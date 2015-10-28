@@ -21,7 +21,7 @@
 
 struct RocketsResources {
         ALLEGRO_FONT *font;
-				ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *clouds;
+				ALLEGRO_BITMAP *bg, *earth, *earth2, *pixelator, *loli, *loli2, *loli3;
         struct Character *rocket_template, *usa_flag, *ru_flag, *cursor, *rainbow, *riot, *euro;
 
         struct Rocket {
@@ -31,7 +31,7 @@ struct RocketsResources {
             struct Rocket *next, *prev;
         } *rockets_left, *rockets_right;
 
-        int counter, hearts;
+				int counter, hearts, tick;
         float cloud_rotation;
 
         struct {
@@ -48,4 +48,7 @@ struct RocketsResources {
         int timelimit, spawnspeed, currentspawn, spawncounter;
 
         struct Timeline *timeline;
+
+				int color;
+				int lizakpowa;
 };

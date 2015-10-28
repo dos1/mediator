@@ -32,7 +32,8 @@ int Gamestate_ProgressCount = 4;
 bool switchMinigame(struct Game *game, struct TM_Action *action, enum TM_ActionState state) {
         if (state == TM_ACTIONSTATE_START) {
             StopGamestate(game, "lollipop");
-            StartGamestate(game, "riots");
+						game->mediator.next = "riots";
+						StartGamestate(game, GetAbstractIsItBonusLevelTimeNowFactoryProvider(game) ? "bonus" : "riots");
         }
         return true;
 }
@@ -240,7 +241,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 
     data->boom_sample = al_load_sample( GetDataFilePath(game, "lollipop/lost.flac") );
     data->jump_sample = al_load_sample( GetDataFilePath(game, "boom.flac") );
-    data->rainbow_sample = al_load_sample( GetDataFilePath(game, "win.flac") );
+		data->rainbow_sample = al_load_sample( GetDataFilePath(game, "lollipop/success.flac") );
     (*progress)(game);
 
     data->boom_sound = al_create_sample_instance(data->boom_sample);
@@ -250,6 +251,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
     data->rainbow_sound = al_create_sample_instance(data->rainbow_sample);
     al_attach_sample_instance_to_mixer(data->rainbow_sound, game->audio.fx);
     al_set_sample_instance_playmode(data->rainbow_sound, ALLEGRO_PLAYMODE_ONCE);
+		al_set_sample_instance_gain(data->rainbow_sound, 1.25);
 
     data->jump_sound = al_create_sample_instance(data->jump_sample);
     al_attach_sample_instance_to_mixer(data->jump_sound, game->audio.fx);

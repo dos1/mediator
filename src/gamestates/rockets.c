@@ -134,7 +134,8 @@ void DrawRockets(struct Game *game, struct RocketsResources* data, struct Rocket
 bool switchMinigame(struct Game *game, struct TM_Action *action, enum TM_ActionState state) {
         if (state == TM_ACTIONSTATE_START) {
             StopGamestate(game, "rockets");
-            StartGamestate(game, "lollipop");
+						game->mediator.next = "lollipop";
+						StartGamestate(game, GetAbstractIsItBonusLevelTimeNowFactoryProvider(game) ? "bonus" : "lollipop");
         }
         return true;
 }
@@ -188,7 +189,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
             iterate(data->rockets_right);
 
 
-            if (((((tmp->character->y > 120) && (rand() % 4 == 0) && (tmp->dy > 0)) || (dupy))) && (tmp->character->x > -20 && tmp->character->x < 320)) {
+						if (((((tmp->character->y > 120) && (rand() % 4 == 0) && (tmp->dy > 0)) || (dupy))) && (tmp->character->x > -20 && tmp->character->x < 310)) {
                 tmp->blown = true;
                 tmp->modifier = 0;
                 tmp->character->angle = 0;
@@ -220,7 +221,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
                     MoveCharacter(game, tmp->character, 0, -11, 0);
                     tmp->character->angle = ((tmp->character->x - 160) / 160) * 0.8;
                 }
-            } else if (tmp->character->x < -20 || tmp->character->x > 320) {
+						} else if (tmp->character->x <= -20 || tmp->character->x >= 310) {
                 tmp->blown = true;
                 tmp->modifier = 0;
                 tmp->character->angle = 0;
@@ -432,6 +433,8 @@ void Gamestate_Start(struct Game *game, struct RocketsResources* data) {
     data->hearts = 0;
 
     data->flash = 0;
+
+		data->next = rand() % 2;
 
     SetCharacterPosition(game, data->usa_flag, 266, 105, 0);
     SetCharacterPosition(game, data->ru_flag, 13, 103, 0);

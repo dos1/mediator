@@ -129,3 +129,8 @@ void UnloadSpritesheets(struct Game *game, struct Character *character);
 void AnimateCharacter(struct Game *game, struct Character *character, float speed_modifier);
 void MoveCharacter(struct Game *game, struct Character *character, float x, float y, float angle);
 void SetCharacterPosition(struct Game *game, struct Character *character, int x, int y, float angle);
+
+// FIXME: game specific
+bool GetAbstractIsItBonusLevelTimeNowFactoryProvider(struct Game *game);
+void AdvanceLevel(struct Game *game, bool won);
+void ShowLevelStatistics(struct Game *game);

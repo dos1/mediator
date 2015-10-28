@@ -524,6 +524,10 @@ void SetCharacterPosition(struct Game *game, struct Character *character, int x,
 	character->angle = angle;
 }
 
+bool GetAbstractIsItBonusLevelTimeNowFactoryProvider(struct Game *game) {
+	return game->mediator.strike && (game->mediator.strike % 5 == 0);
+}
+
 void DrawCharacter(struct Game *game, struct Character *character, ALLEGRO_COLOR tint, int flags) {
 	if (character->dead) return;
     int spritesheetX = al_get_bitmap_width(character->bitmap)*(character->pos%character->spritesheet->cols);
@@ -534,8 +538,10 @@ void DrawCharacter(struct Game *game, struct Character *character, ALLEGRO_COLOR
 void AdvanceLevel(struct Game *game, bool won) {
     if (won) {
         game->mediator.score++;
+				game->mediator.strike++;
     } else {
         game->mediator.lives--;
+				game->mediator.strike = 0;
     }
 		game->mediator.modificator *= 1.025;
     SelectSpritesheet(game, game->mediator.heart, "heart");

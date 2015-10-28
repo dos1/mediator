@@ -220,6 +220,8 @@ int main(int argc, char **argv){
     game.mediator.lives = 3;
     game.mediator.score = 0;
     game.mediator.modificator = 1;
+		game.mediator.strike = 0;
+		game.mediator.next = "lollipop";
 
     game.mediator.heart = CreateCharacter(&game, "heart");
     RegisterSpritesheet(&game, game.mediator.heart, "heart");

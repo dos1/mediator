@@ -109,6 +109,8 @@ struct Game {
             int lives;
             float modificator;
             struct Character *heart;
+						char* next;
+						int strike;
         } mediator;
 
 };
