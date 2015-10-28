@@ -94,7 +94,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 		data->sound = al_create_sample_instance(data->sample);
 		al_attach_sample_instance_to_mixer(data->sound, game->audio.fx);
 		al_set_sample_instance_playmode(data->sound, ALLEGRO_PLAYMODE_ONCE);
-		al_set_sample_instance_gain(data->sound, 1.25);
+		al_set_sample_instance_gain(data->sound, 1.5);
 
 	return data;
 }
