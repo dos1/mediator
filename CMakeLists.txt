@@ -41,19 +41,19 @@ add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_D
 
 INCLUDE(InstallRequiredSystemLibraries)
 
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Who's got tickles?")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Save the world!")
 SET(CPACK_PACKAGE_VENDOR "Sebastian Krzyszkowiak")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "2")
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "Tickle Monster")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "Mediator")
 IF(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
   SET(CPACK_GENERATOR "NSIS")
   SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\mediator.exe")
-  SET(CPACK_NSIS_DISPLAY_NAME "Tickle Monster")
+  SET(CPACK_NSIS_DISPLAY_NAME "Mediator")
   SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\dosowisko.net\\\\\\\\mediator")
   SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\dosowisko.net")
   SET(CPACK_NSIS_CONTACT "dos@dosowisko.net")

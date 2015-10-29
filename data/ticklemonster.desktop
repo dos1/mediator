@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Tickle Monster vs Suits
-Exec=ticklemonster
-Comment=Who's got tickles?
-Icon=ticklemonster
+Name=Mediator
+Exec=mediator
+Comment=Save the world!
+Icon=mediator
 Terminal=false
 Categories=Game;ArcadeGame;

@@ -1,4 +1,4 @@
-### Tickle Monster vs Suits
+### Mediator
 
 Dependences (for Debian-based distros):
 
@@ -18,7 +18,7 @@ Compilation:
 
 Running (from top directory):
 
-	build/src/ticklemonster
+	build/src/mediator
 
 Installation (as root):
 
@@ -26,6 +26,7 @@ Installation (as root):
 
 For packaging information, read lib/README.txt
 
-https://github.com/dos1/TickleMonster/
+https://github.com/dos1/mediator/
 
 Written by Sebastian Krzyszkowiak <dos@dosowisko.net>
+           Konrad Burandt
