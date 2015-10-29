@@ -86,6 +86,8 @@ void SetupViewport(struct Game *game) {
 	game->viewport.width = 320;
 	game->viewport.height = 180;
 
+	al_clear_to_color(al_map_rgb(0,0,0));
+
 	int resolution = al_get_display_width(game->display) / 320;
 	if (al_get_display_height(game->display) / 180 < resolution) resolution = al_get_display_height(game->display) / 180;
 	if (resolution < 1) resolution = 1;
