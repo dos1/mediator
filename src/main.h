@@ -111,6 +111,7 @@ struct Game {
             struct Character *heart;
 						char* next;
 						int strike;
+						bool pause;
         } mediator;
 
 };

@@ -444,5 +444,9 @@ void Gamestate_Unload(struct Game *game, struct RocketsResources* data) {
 
 void Gamestate_Reload(struct Game *game, struct RocketsResources* data) {}
 
-void Gamestate_Resume(struct Game *game, struct RocketsResources* data) {}
-void Gamestate_Pause(struct Game *game, struct RocketsResources* data) {}
+void Gamestate_Resume(struct Game *game, struct RocketsResources* data) {
+	TM_Resume(data->timeline);
+}
+void Gamestate_Pause(struct Game *game, struct RocketsResources* data) {
+	TM_Pause(data->timeline);
+}

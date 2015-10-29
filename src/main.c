@@ -45,9 +45,16 @@ void DrawGamestates(struct Game *game) {
 		}
 		tmp = tmp->next;
 	}
+
+	if (game->mediator.pause) {
+		al_draw_filled_rectangle(0, 0, 320, 180, al_map_rgba(0,0,0,192));
+		DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5 - 25, ALLEGRO_ALIGN_CENTRE, "Game paused!");
+		DrawTextWithShadow(game->_priv.font, al_map_rgb(255,255,255), game->viewport.width*0.5, game->viewport.height*0.5 + 5, ALLEGRO_ALIGN_CENTRE, "SPACE to resume");
+	}
 }
 
 void LogicGamestates(struct Game *game) {
+	if (game->mediator.pause) return;
 	struct Gamestate *tmp = game->_priv.gamestates;
 	while (tmp) {
 		if ((tmp->loaded) && (tmp->started) && (!tmp->paused)) {
@@ -66,6 +73,28 @@ void EventGamestates(struct Game *game, ALLEGRO_EVENT *ev) {
 		tmp = tmp->next;
 	}
 }
+
+void PauseGamestates(struct Game *game) {
+	struct Gamestate *tmp = game->_priv.gamestates;
+	while (tmp) {
+		if ((tmp->loaded) && (tmp->started)) {
+			(*tmp->api.Gamestate_Pause)(game, tmp->data);
+		}
+		tmp = tmp->next;
+	}
+}
+
+
+void ResumeGamestates(struct Game *game) {
+	struct Gamestate *tmp = game->_priv.gamestates;
+	while (tmp) {
+		if ((tmp->loaded) && (tmp->started)) {
+			(*tmp->api.Gamestate_Resume)(game, tmp->data);
+		}
+		tmp = tmp->next;
+	}
+}
+
 
 void derp(int sig) {
 	int __attribute__((unused)) n = write(STDERR_FILENO, "Segmentation fault\nI just don't know what went wrong!\n", 54);
@@ -222,6 +251,7 @@ int main(int argc, char **argv){
     game.mediator.modificator = 1;
 		game.mediator.strike = 0;
 		game.mediator.next = "lollipop";
+		game.mediator.pause = false;
 
     game.mediator.heart = CreateCharacter(&game, "heart");
     RegisterSpritesheet(&game, game.mediator.heart, "heart");
@@ -459,8 +489,17 @@ int main(int argc, char **argv){
 				al_save_bitmap(al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP), al_get_backbuffer(game.display));
 				PrintConsole(&game, "Screenshot stored in %s", al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP));
 				al_destroy_path(path);
+			} else if ((ev.type == ALLEGRO_EVENT_KEY_DOWN) && (ev.keyboard.keycode == ALLEGRO_KEY_SPACE)) {
+				game.mediator.pause = !game.mediator.pause;
+				if (game.mediator.pause) {
+					PauseGamestates(&game);
+				} else {
+					ResumeGamestates(&game);
+				}
 			} else {
-				EventGamestates(&game, &ev);
+				if (!game.mediator.pause) {
+					EventGamestates(&game, &ev);
+				}
 			}
 		}
 	}
