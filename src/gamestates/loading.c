@@ -18,8 +18,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
+
 #include <allegro5/allegro_primitives.h>
-#include "../utils.h"
+#include "../common.h"
+#include <libsuperderpy.h>
 #include "loading.h"
 
 void Progress(struct Game *game, struct LoadingResources *data, float p) {

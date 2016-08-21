@@ -23,54 +23,52 @@
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include <stdio.h>
-
-#include "../utils.h"
-#include "../timeline.h"
-#include "../config.h"
+#include "../common.h"
+#include <libsuperderpy.h>
 #include "info.h"
 
 int Gamestate_ProgressCount = 1;
 
 void Gamestate_Logic(struct Game *game, struct dosowiskoResources* data) {
-    data->tick++;
+	  data->tick++;
 		if (data->tick > 86) {
-				SwitchGamestate(game, "info", "lollipop");
-    }
+			  SwitchGamestate(game, "info", "lollipop");
+		}
 }
 
 void Gamestate_Draw(struct Game *game, struct dosowiskoResources* data) {
-    al_draw_bitmap(data->bitmap, 0, 0, 0);
+	  al_draw_bitmap(data->bitmap, 0, 0, 0);
 		if ((data->tick / 11) % 2 == 0) {
-				al_draw_bitmap(data->icon, 320 / 2 - al_get_bitmap_width(data->icon) / 2, 180 / 2 - al_get_bitmap_height(data->icon) / 2 , 0);
-    }
+			  al_draw_bitmap(data->icon, 320 / 2 - al_get_bitmap_width(data->icon) / 2, 180 / 2 - al_get_bitmap_height(data->icon) / 2 , 0);
+		}
 }
 
 void Gamestate_Start(struct Game *game, struct dosowiskoResources* data) {
-    data->tick = 0;
-    al_grab_mouse(game->display);
-    al_hide_mouse_cursor(game->display);
+	  data->tick = 0;
+		al_grab_mouse(game->display);
+		al_hide_mouse_cursor(game->display);
 		al_play_sample_instance(data->sound);
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct dosowiskoResources* data, ALLEGRO_EVENT *ev) {
-    //TM_HandleEvent(data->timeline, ev);
+	  //TM_HandleEvent(data->timeline, ev);
 	if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ESCAPE)) {
-				SwitchGamestate(game, "info", "lollipop");
+		    SwitchGamestate(game, "info", "lollipop");
 	}
-    if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ENTER)) {
-				SwitchGamestate(game, "info", "lollipop");
-    }
+	  if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ENTER)) {
+			  SwitchGamestate(game, "info", "lollipop");
+		}
 }
 
 void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 	struct dosowiskoResources *data = malloc(sizeof(struct dosowiskoResources));
-    data->bitmap = al_load_bitmap( GetDataFilePath(game, "bg.png"));
+	  data->bitmap = al_load_bitmap( GetDataFilePath(game, "bg.png"));
 		data->icon = al_load_bitmap( GetDataFilePath(game, "mouse.png"));
 
-    data->font = al_load_ttf_font(GetDataFilePath(game, "fonts/MonkeyIsland.ttf"),100,0 );
+		data->font = al_load_ttf_font(GetDataFilePath(game, "fonts/MonkeyIsland.ttf"),100,0 );
 	(*progress)(game);
 
-        data->sample = al_load_sample( GetDataFilePath(game, "warning.flac") );
+		    data->sample = al_load_sample( GetDataFilePath(game, "warning.flac") );
 
 		data->sound = al_create_sample_instance(data->sample);
 		al_attach_sample_instance_to_mixer(data->sound, game->audio.fx);
@@ -85,7 +83,7 @@ void Gamestate_Stop(struct Game *game, struct dosowiskoResources* data) {
 }
 
 void Gamestate_Unload(struct Game *game, struct dosowiskoResources* data) {
-    free(data);
+	  free(data);
 }
 
 void Gamestate_Reload(struct Game *game, struct dosowiskoResources* data) {}

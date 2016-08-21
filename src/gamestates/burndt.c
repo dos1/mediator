@@ -22,61 +22,61 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
-#include "../utils.h"
-#include "../timeline.h"
+#include "../common.h"
+#include <libsuperderpy.h>
 #include "burndt.h"
 
 int Gamestate_ProgressCount = 1;
 
 void Gamestate_Logic(struct Game *game, struct burndtResources* data) {
 	data->tick++;
-    if (data->tick > 260) {
-        SwitchGamestate(game, "burndt", "menu");
-    }
+	  if (data->tick > 260) {
+			  SwitchGamestate(game, "burndt", "menu");
+		}
 }
 
 void Gamestate_Draw(struct Game *game, struct burndtResources* data) {
 
-    float light = 1 - data->tick / 20.0;
+	  float light = 1 - data->tick / 20.0;
 
-    if (data->tick >= 190) {
-        light = 1 - (data->tick-190) / 20.0;
-    }
+		if (data->tick >= 190) {
+			  light = 1 - (data->tick-190) / 20.0;
+		}
 
-    if (light > 1) {
-        light = 1;
-    }
-    if (light < 0) {
-        light = 0;
-    }
+		if (light > 1) {
+			  light = 1;
+		}
+		if (light < 0) {
+			  light = 0;
+		}
 
-    if (data->tick < 190) {
-        al_clear_to_color(al_map_rgb(82 + (255-82) * light, 82 + (255-82) * light, 186 + (255-186) * light));
-        al_draw_bitmap(data->bitmap, 0, 0, 0);
-    } else {
-        al_clear_to_color(al_map_rgb(255 * light, 255 * light, 255 * light));
+		if (data->tick < 190) {
+			  al_clear_to_color(al_map_rgb(82 + (255-82) * light, 82 + (255-82) * light, 186 + (255-186) * light));
+				al_draw_bitmap(data->bitmap, 0, 0, 0);
+		} else {
+			  al_clear_to_color(al_map_rgb(255 * light, 255 * light, 255 * light));
 
-    }
+		}
 
 }
 
 void Gamestate_Start(struct Game *game, struct burndtResources* data) {
-    data->tick = 0;
+	  data->tick = 0;
 	al_play_sample_instance(data->sound);
 }
 
 void Gamestate_ProcessEvent(struct Game *game, struct burndtResources* data, ALLEGRO_EVENT *ev) {
 	if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ESCAPE)) {
-        SwitchGamestate(game, "burndt", "menu");
+		    SwitchGamestate(game, "burndt", "menu");
 	}
 }
 
 void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
-    struct burndtResources *data = malloc(sizeof(struct burndtResources));
-    data->bitmap = al_load_bitmap( GetDataFilePath(game, "burndt.png") );
-    (*progress)(game);
+	  struct burndtResources *data = malloc(sizeof(struct burndtResources));
+		data->bitmap = al_load_bitmap( GetDataFilePath(game, "burndt.png") );
+		(*progress)(game);
 
-    data->sample = al_load_sample( GetDataFilePath(game, "burndt.flac") );
+		data->sample = al_load_sample( GetDataFilePath(game, "burndt.flac") );
 	data->sound = al_create_sample_instance(data->sample);
 	al_attach_sample_instance_to_mixer(data->sound, game->audio.music);
 	al_set_sample_instance_playmode(data->sound, ALLEGRO_PLAYMODE_ONCE);
@@ -91,7 +91,7 @@ void Gamestate_Stop(struct Game *game, struct burndtResources* data) {
 void Gamestate_Unload(struct Game *game, struct burndtResources* data) {
 	al_destroy_sample_instance(data->sound);
 	al_destroy_sample(data->sample);
-    al_destroy_bitmap(data->bitmap);
+	  al_destroy_bitmap(data->bitmap);
 	free(data);
 }
 
