@@ -26,7 +26,7 @@
 #include <libsuperderpy.h>
 #include "menu.h"
 
-int Gamestate_ProgressCount = 4;
+int Gamestate_ProgressCount = 6;
 
 void About(struct Game *game, struct MenuResources* data) {
 	  ALLEGRO_TRANSFORM trans;
@@ -175,8 +175,8 @@ void Gamestate_Logic(struct Game *game, struct MenuResources* data) {
 						LoadGamestate(game, "riots");
 						LoadGamestate(game, "lollipop");
 						LoadGamestate(game, "bonus");
-						StartGamestate(game, "info");
-						StopGamestate(game, "menu");
+						LoadGamestate(game, "pause");
+						ChangeCurrentGamestate(game, "info");
 				}
 
 		} else {
@@ -218,24 +218,28 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 		data->title = al_load_bitmap( GetDataFilePath(game, "title.png") );
 		(*progress)(game);
 
-		game->data->muzyczka.sample.fg = al_load_sample( GetDataFilePath(game, "song-fg.flac") );
-		game->data->muzyczka.sample.bg = al_load_sample( GetDataFilePath(game, "song-bg.flac") );
-		game->data->muzyczka.sample.drums = al_load_sample( GetDataFilePath(game, "song-drums.flac") );
+		if (!game->data->muzyczka.sample.fg) {
+			game->data->muzyczka.sample.fg = al_load_sample( GetDataFilePath(game, "song-fg.flac") );
+			(*progress)(game);
+			game->data->muzyczka.sample.bg = al_load_sample( GetDataFilePath(game, "song-bg.flac") );
+			(*progress)(game);
+			game->data->muzyczka.sample.drums = al_load_sample( GetDataFilePath(game, "song-drums.flac") );
+			(*progress)(game);
+
+			game->data->muzyczka.instance.fg = al_create_sample_instance(game->data->muzyczka.sample.fg);
+			al_attach_sample_instance_to_mixer(game->data->muzyczka.instance.fg, game->audio.music);
+			al_set_sample_instance_playmode(game->data->muzyczka.instance.fg, ALLEGRO_PLAYMODE_LOOP);
+
+			game->data->muzyczka.instance.bg = al_create_sample_instance(game->data->muzyczka.sample.bg);
+			al_attach_sample_instance_to_mixer(game->data->muzyczka.instance.bg, game->audio.music);
+			al_set_sample_instance_playmode(game->data->muzyczka.instance.bg, ALLEGRO_PLAYMODE_LOOP);
+
+			game->data->muzyczka.instance.drums = al_create_sample_instance(game->data->muzyczka.sample.drums);
+			al_attach_sample_instance_to_mixer(game->data->muzyczka.instance.drums, game->audio.music);
+			al_set_sample_instance_playmode(game->data->muzyczka.instance.drums, ALLEGRO_PLAYMODE_LOOP);
+		}
+
 		data->click_sample = al_load_sample( GetDataFilePath(game, "click.flac") );
-		(*progress)(game);
-
-		game->data->muzyczka.instance.fg = al_create_sample_instance(game->data->muzyczka.sample.fg);
-		al_attach_sample_instance_to_mixer(game->data->muzyczka.instance.fg, game->audio.music);
-		al_set_sample_instance_playmode(game->data->muzyczka.instance.fg, ALLEGRO_PLAYMODE_LOOP);
-
-		game->data->muzyczka.instance.bg = al_create_sample_instance(game->data->muzyczka.sample.bg);
-		al_attach_sample_instance_to_mixer(game->data->muzyczka.instance.bg, game->audio.music);
-		al_set_sample_instance_playmode(game->data->muzyczka.instance.bg, ALLEGRO_PLAYMODE_LOOP);
-
-		game->data->muzyczka.instance.drums = al_create_sample_instance(game->data->muzyczka.sample.drums);
-		al_attach_sample_instance_to_mixer(game->data->muzyczka.instance.drums, game->audio.music);
-		al_set_sample_instance_playmode(game->data->muzyczka.instance.drums, ALLEGRO_PLAYMODE_LOOP);
-
 		data->click = al_create_sample_instance(data->click_sample);
 		al_attach_sample_instance_to_mixer(data->click, game->audio.fx);
 		al_set_sample_instance_playmode(data->click, ALLEGRO_PLAYMODE_ONCE);

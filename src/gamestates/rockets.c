@@ -470,6 +470,10 @@ void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, AL
 				data->mousemove.bottom = mousey > data->cursor->y;
 				SetCharacterPosition(game, data->cursor, mousex, mousey , 0); // FIXMEEEE!
 	  }
+	if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_SPACE)) {
+		    PauseCurrentGamestate(game);
+				StartGamestate(game, "pause");
+	}
 }
 
 void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {

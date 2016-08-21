@@ -314,6 +314,10 @@ void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, AL
 			 data->rockets_left = CreateRocket(game, data, data->rockets_left, false);
 			}
 		}
+		if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_SPACE)) {
+			    PauseCurrentGamestate(game);
+					StartGamestate(game, "pause");
+		}
 }
 
 void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
