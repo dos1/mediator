@@ -422,7 +422,7 @@ void Gamestate_ProcessEvent(struct Game *game, struct MenuResources* data, ALLEG
 												} else {
 													  al_hide_mouse_cursor(game->display);
 												}
-												SetupViewport(game);
+												SetupViewport(game, game->viewport_config);
 												PrintConsole(game, "Fullscreen toggled");
 										    break;
 									  case 1:
@@ -457,7 +457,7 @@ void Gamestate_ProcessEvent(struct Game *game, struct MenuResources* data, ALLEG
 														al_resize_display(game->display, 320, 180);
 												}
 
-												SetupViewport(game);
+												SetupViewport(game, game->viewport_config);
 												PrintConsole(game, "Resolution changed");
 										    break;
 									  case 3:
