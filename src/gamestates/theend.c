@@ -84,7 +84,7 @@ void* Gamestate_Load(struct Game *game, void (*progress)(struct Game*)) {
 	struct dosowiskoResources *data = malloc(sizeof(struct dosowiskoResources));
 	  data->bitmap = al_load_bitmap( GetDataFilePath(game, "bg.png"));
 
-		data->font = al_load_ttf_font(GetDataFilePath(game, "fonts/MonkeyIsland.ttf"),100,0 );
+		data->font = al_load_font(GetDataFilePath(game, "fonts/MonkeyIsland.ttf"),100, ALLEGRO_TTF_MONOCHROME );
 	(*progress)(game);
 
 		    data->sample = al_load_sample( GetDataFilePath(game, "end.flac") );

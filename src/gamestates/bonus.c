@@ -41,7 +41,7 @@ struct Rocket* CreateRocket(struct Game *game, struct RocketsResources* data, st
 		n->character->spritesheets = data->rocket_template->spritesheets;
 		n->character->shared = true;
 		SelectSpritesheet(game, n->character, rand() % 2 ? "usa" : "ru");
-		SetCharacterPosition(game, n->character, (data->ru_flag->x + 40) + rand() % 100 - 50, 100, right ? -0.33 : 0.33);
+		SetCharacterPosition(game, n->character, (GetCharacterX(game, data->ru_flag) + 40) + rand() % 100 - 50, 100, right ? -0.33 : 0.33);
 		al_play_sample_instance(data->jump_sound);
 		data->currentspawn = data->spawnspeed + (data->spawnspeed * 0.1) * (float)(rand() / (float)RAND_MAX * 2) - (data->spawnspeed * 0.05);
 
@@ -96,8 +96,8 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 
 				if (!tmp->blown) {
 
-					  //if (((((tmp->character->y > 90) && (rand() % 4 == 0) && (tmp->dy > 0)))) && (tmp->character->x > -20 && tmp->character->x < 320)) {
-					  if ((tmp->character->x > 200) && (tmp->character->y < 50) && (tmp->character->x < 260) && (rand() % 4 == 0)) {
+					  //if (((((GetCharacterY(game, tmp->character) > 90) && (rand() % 4 == 0) && (tmp->dy > 0)))) && (GetCharacterX(game, tmp->character) > -20 && GetCharacterX(game, tmp->character) < 320)) {
+					  if ((GetCharacterX(game, tmp->character) > 200) && (GetCharacterY(game, tmp->character) < 50) && (GetCharacterX(game, tmp->character) < 260) && (rand() % 4 == 0)) {
 							  tmp->blown = true;
 								tmp->modifier = 0;
 								tmp->character->angle = 0;
@@ -302,10 +302,10 @@ void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, AL
 		} else if (ev->type == ALLEGRO_EVENT_MOUSE_AXES) {
 			  int mousex = ev->mouse.x / (al_get_display_width(game->display) / 320);
 				int mousey = 80;
-				data->mousemove.right = mousex > data->cursor->x;
-				data->mousemove.top = mousey < data->cursor->y;
-				data->mousemove.left = mousex < data->cursor->x;
-				data->mousemove.bottom = mousey > data->cursor->y;
+				data->mousemove.right = mousex > GetCharacterX(game, data->cursor);
+				data->mousemove.top = mousey < GetCharacterY(game, data->cursor);
+				data->mousemove.left = mousex < GetCharacterX(game, data->cursor);
+				data->mousemove.bottom = mousey > GetCharacterY(game, data->cursor);
 				if ((!data->won)&& (!data->lost)) {
 					SetCharacterPosition(game, data->ru_flag, mousex, mousey , 0); // FIXMEEEE!
 				}

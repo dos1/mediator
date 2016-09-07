@@ -96,7 +96,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 
 				if (!tmp->blown) {
 
-					  if (((((tmp->character->y > 90) && (rand() % 4 == 0) && (tmp->dy > 0)))) && (tmp->character->x > -20 && tmp->character->x < 320)) {
+					  if (((((GetCharacterY(game, tmp->character) > 90) && (rand() % 4 == 0) && (tmp->dy > 0)))) && (GetCharacterX(game, tmp->character) > -20 && GetCharacterX(game, tmp->character) < 320)) {
 							  tmp->blown = true;
 								tmp->modifier = 0;
 								tmp->character->angle = 0;
@@ -105,7 +105,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 								SelectSpritesheet(game, tmp->character, "boom");
 								MoveCharacter(game, tmp->character, 5, 5, 0);
 
-								if (!((tmp->character->x > 140) && (tmp->character->x < 180))) {
+								if (!((GetCharacterX(game, tmp->character) > 140) && (GetCharacterX(game, tmp->character) < 180))) {
 									  if (!data->lost) {
 											  AdvanceLevel(game, false);
 
@@ -127,7 +127,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 
 								}
 
-						} else if (tmp->character->x < -20 || tmp->character->x > 320) {
+						} else if (GetCharacterX(game, tmp->character) < -20 || GetCharacterX(game, tmp->character) > 320) {
 							  tmp->blown = true;
 								tmp->modifier = 0;
 								tmp->character->angle = 0;
@@ -222,12 +222,12 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 					  if (!tmp1->blown) {
 							//  if (CheckCollision(game, data, data->cursor, tmp1->character)) {
 
-							  if ( (abs(tmp1->character->y - data->cursor->y) <= 10) &&
-								     (((tmp1->character->x <= data->cursor->x + al_get_bitmap_width(data->cursor->bitmap)) && (tmp1->character->x + al_get_bitmap_width(tmp1->character->bitmap) >= data->cursor->x + al_get_bitmap_width(data->cursor->bitmap)))  ||
+							  if ( (abs(GetCharacterY(game, tmp1->character) - GetCharacterY(game, data->cursor)) <= 10) &&
+								     (((GetCharacterX(game, tmp1->character) <= GetCharacterX(game, data->cursor) + al_get_bitmap_width(data->cursor->bitmap)) && (GetCharacterX(game, tmp1->character) + al_get_bitmap_width(tmp1->character->bitmap) >= GetCharacterX(game, data->cursor) + al_get_bitmap_width(data->cursor->bitmap)))  ||
 
-								     ((tmp1->character->x + al_get_bitmap_width(tmp1->character->bitmap) >= data->cursor->x) && (tmp1->character->x + al_get_bitmap_width(tmp1->character->bitmap) <= data->cursor->x + al_get_bitmap_width(data->cursor->bitmap))) )) {
+								     ((GetCharacterX(game, tmp1->character) + al_get_bitmap_width(tmp1->character->bitmap) >= GetCharacterX(game, data->cursor)) && (GetCharacterX(game, tmp1->character) + al_get_bitmap_width(tmp1->character->bitmap) <= GetCharacterX(game, data->cursor) + al_get_bitmap_width(data->cursor->bitmap))) )) {
 
-									  if (tmp1->character->y < data->cursor->y) {
+									  if (GetCharacterY(game, tmp1->character) < GetCharacterY(game, data->cursor)) {
 											  tmp1->dx = 0;
 												tmp1->dy = 0;
 												tmp1->modifier = 0;
@@ -372,10 +372,10 @@ void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, AL
 		} else if (ev->type == ALLEGRO_EVENT_MOUSE_AXES) {
 			  int mousex = ev->mouse.x / (al_get_display_width(game->display) / 320);
 				int mousey = 50;
-				data->mousemove.right = mousex > data->cursor->x;
-				data->mousemove.top = mousey < data->cursor->y;
-				data->mousemove.left = mousex < data->cursor->x;
-				data->mousemove.bottom = mousey > data->cursor->y;
+				data->mousemove.right = mousex > GetCharacterX(game, data->cursor);
+				data->mousemove.top = mousey < GetCharacterY(game, data->cursor);
+				data->mousemove.left = mousex < GetCharacterX(game, data->cursor);
+				data->mousemove.bottom = mousey > GetCharacterY(game, data->cursor);
 				SetCharacterPosition(game, data->cursor, mousex, mousey , 0); // FIXMEEEE!
 		}
 		if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_SPACE)) {

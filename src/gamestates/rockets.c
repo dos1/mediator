@@ -86,15 +86,15 @@ bool CheckCollision(struct Game *game, struct RocketsResources* data, struct Cha
 			  bool value = false;
 
 				if ((character2->angle <= 1.0 && character2->angle >= 0.0) || (character2->angle < -2.0 && character2->angle > -2.6)) {
-					  value = value || check(character2->x + 8, character2->y + 15, al_get_bitmap_width(character2->bitmap) - 16, al_get_bitmap_height(character2->bitmap) - 9, x, y, w, h);
-						value = value || check(character2->x + 15, character2->y + 7,  al_get_bitmap_width(character2->bitmap) - 9, al_get_bitmap_height(character2->bitmap) - 15, x, y, w, h);
+					  value = value || check(GetCharacterX(game, character2) + 8, GetCharacterY(game, character2) + 15, al_get_bitmap_width(character2->bitmap) - 16, al_get_bitmap_height(character2->bitmap) - 9, x, y, w, h);
+						value = value || check(GetCharacterX(game, character2) + 15, GetCharacterY(game, character2) + 7,  al_get_bitmap_width(character2->bitmap) - 9, al_get_bitmap_height(character2->bitmap) - 15, x, y, w, h);
 				} else if ((character2->angle >= -1.0 && character2->angle <= 0.0) || (character2->angle > 2.0 && character2->angle < 2.6)) {
-					  value = value || check(character2->x + 14, character2->y + 15,  al_get_bitmap_width(character2->bitmap) - 9,al_get_bitmap_height(character2->bitmap) - 10, x, y, w, h);
-						value = value || check(character2->x + 7, character2->y + 7, al_get_bitmap_width(character2->bitmap) - 16, al_get_bitmap_height(character2->bitmap) - 16, x, y, w, h);
+					  value = value || check(GetCharacterX(game, character2) + 14, GetCharacterY(game, character2) + 15,  al_get_bitmap_width(character2->bitmap) - 9,al_get_bitmap_height(character2->bitmap) - 10, x, y, w, h);
+						value = value || check(GetCharacterX(game, character2) + 7, GetCharacterY(game, character2) + 7, al_get_bitmap_width(character2->bitmap) - 16, al_get_bitmap_height(character2->bitmap) - 16, x, y, w, h);
 				} else if ((character2->angle > 1.0 && character2->angle < 2.0) || (character2->angle < -1.0 && character2->angle > -2.0)) {
-					  value = value || check(character2->x + 6, character2->y + 12, al_get_bitmap_width(character2->bitmap) + 10, al_get_bitmap_height(character2->bitmap) - 18, x, y, w, h);
+					  value = value || check(GetCharacterX(game, character2) + 6, GetCharacterY(game, character2) + 12, al_get_bitmap_width(character2->bitmap) + 10, al_get_bitmap_height(character2->bitmap) - 18, x, y, w, h);
 				} else {
-					  value = value || check(character2->x + 13, character2->y + 5,  al_get_bitmap_width(character2->bitmap) - 18,al_get_bitmap_height(character2->bitmap) + 8, x, y, w, h);
+					  value = value || check(GetCharacterX(game, character2) + 13, GetCharacterY(game, character2) + 5,  al_get_bitmap_width(character2->bitmap) - 18,al_get_bitmap_height(character2->bitmap) + 8, x, y, w, h);
 				}
 
 				return value;
@@ -104,19 +104,19 @@ bool CheckCollision(struct Game *game, struct RocketsResources* data, struct Cha
 		bool value = false;
 
 		if (character1 == data->cursor) {
-			  return pointInside(character1->x, character1->y, al_get_bitmap_width(character1->bitmap), al_get_bitmap_height(character1->bitmap));
+			  return pointInside(GetCharacterX(game, character1), GetCharacterY(game, character1), al_get_bitmap_width(character1->bitmap), al_get_bitmap_height(character1->bitmap));
 		}
 
 		if ((character1->angle <= 1.0 && character1->angle >= 0.0) || (character1->angle < -2.0 && character1->angle > -2.6)) {
-			  value = value || pointInside(character1->x + 8, character1->y + 15, al_get_bitmap_width(character1->bitmap) - 16, al_get_bitmap_height(character1->bitmap) - 9);
-				value = value || pointInside(character1->x + 15, character1->y + 7, al_get_bitmap_width(character1->bitmap) - 9, al_get_bitmap_height(character1->bitmap) - 15);
+			  value = value || pointInside(GetCharacterX(game, character1) + 8, GetCharacterY(game, character1) + 15, al_get_bitmap_width(character1->bitmap) - 16, al_get_bitmap_height(character1->bitmap) - 9);
+				value = value || pointInside(GetCharacterX(game, character1) + 15, GetCharacterY(game, character1) + 7, al_get_bitmap_width(character1->bitmap) - 9, al_get_bitmap_height(character1->bitmap) - 15);
 		} else if ((character1->angle >= -1.0 && character1->angle <= 0.0) || (character1->angle > 2.0 && character1->angle < 2.6)) {
-			  value = value || pointInside(character1->x + 14, character1->y + 15, al_get_bitmap_width(character1->bitmap) - 9, al_get_bitmap_height(character1->bitmap) - 10);
-				value = value || pointInside(character1->x + 7, character1->y + 7,al_get_bitmap_width(character1->bitmap) - 16,al_get_bitmap_height(character1->bitmap) - 16);
+			  value = value || pointInside(GetCharacterX(game, character1) + 14, GetCharacterY(game, character1) + 15, al_get_bitmap_width(character1->bitmap) - 9, al_get_bitmap_height(character1->bitmap) - 10);
+				value = value || pointInside(GetCharacterX(game, character1) + 7, GetCharacterY(game, character1) + 7,al_get_bitmap_width(character1->bitmap) - 16,al_get_bitmap_height(character1->bitmap) - 16);
 		} else if ((character1->angle > 1.0 && character1->angle < 2.0) || (character1->angle < -1.0 && character1->angle > -2.0)) {
-			  value = value || pointInside(character1->x + 6, character1->y + 12, al_get_bitmap_width(character1->bitmap) + 10,al_get_bitmap_height(character1->bitmap) - 18);
+			  value = value || pointInside(GetCharacterX(game, character1) + 6, GetCharacterY(game, character1) + 12, al_get_bitmap_width(character1->bitmap) + 10,al_get_bitmap_height(character1->bitmap) - 18);
 		} else {
-			  value = value || pointInside(character1->x + 13, character1->y + 5, al_get_bitmap_width(character1->bitmap) - 18,al_get_bitmap_height(character1->bitmap) + 8);
+			  value = value || pointInside(GetCharacterX(game, character1) + 13, GetCharacterY(game, character1) + 5, al_get_bitmap_width(character1->bitmap) - 18,al_get_bitmap_height(character1->bitmap) + 8);
 		}
 
 		return value;
@@ -189,7 +189,7 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 						iterate(data->rockets_right);
 
 
-						if (((((tmp->character->y > 120) && (rand() % 4 == 0) && (tmp->dy > 0)) || (dupy))) && (tmp->character->x > -20 && tmp->character->x < 310)) {
+						if (((((GetCharacterY(game, tmp->character) > 120) && (rand() % 4 == 0) && (tmp->dy > 0)) || (dupy))) && (GetCharacterX(game, tmp->character) > -20 && GetCharacterX(game, tmp->character) < 310)) {
 							  tmp->blown = true;
 								tmp->modifier = 0;
 								tmp->character->angle = 0;
@@ -219,9 +219,9 @@ void UpdateRockets(struct Game *game, struct RocketsResources *data, struct Rock
 								if (!dupy) {
 									  SelectSpritesheet(game, tmp->character, "atom");
 										MoveCharacter(game, tmp->character, 0, -11, 0);
-										tmp->character->angle = ((tmp->character->x - 160) / 160) * 0.8;
+										tmp->character->angle = ((GetCharacterX(game, tmp->character) - 160) / 160) * 0.8;
 								}
-						} else if (tmp->character->x <= -20 || tmp->character->x >= 310) {
+						} else if (GetCharacterX(game, tmp->character) <= -20 || GetCharacterX(game, tmp->character) >= 310) {
 							  tmp->blown = true;
 								tmp->modifier = 0;
 								tmp->character->angle = 0;
@@ -334,7 +334,7 @@ void Gamestate_Logic(struct Game *game, struct RocketsResources* data) {
 												}
 
 												MoveCharacter(game, data->cursor, movex, movey, 0);
-												al_set_mouse_xy(game->display, data->cursor->x * (al_get_display_width(game->display) / 320), data->cursor->y * (al_get_display_height(game->display) / 180));
+												al_set_mouse_xy(game->display, GetCharacterX(game, data->cursor) * (al_get_display_width(game->display) / 320), GetCharacterY(game, data->cursor) * (al_get_display_height(game->display) / 180));
 
 												data->mousemove.top = false;
 												data->mousemove.bottom = false;
@@ -464,10 +464,10 @@ void Gamestate_ProcessEvent(struct Game *game, struct RocketsResources* data, AL
 	  } else if (ev->type == ALLEGRO_EVENT_MOUSE_AXES) {
 		    int mousex = ev->mouse.x / (al_get_display_width(game->display) / 320);
 				int mousey = ev->mouse.y / (al_get_display_height(game->display) / 180);
-				data->mousemove.right = mousex > data->cursor->x;
-				data->mousemove.top = mousey < data->cursor->y;
-				data->mousemove.left = mousex < data->cursor->x;
-				data->mousemove.bottom = mousey > data->cursor->y;
+				data->mousemove.right = mousex > GetCharacterX(game, data->cursor);
+				data->mousemove.top = mousey < GetCharacterY(game, data->cursor);
+				data->mousemove.left = mousex < GetCharacterX(game, data->cursor);
+				data->mousemove.bottom = mousey > GetCharacterY(game, data->cursor);
 				SetCharacterPosition(game, data->cursor, mousex, mousey , 0); // FIXMEEEE!
 	  }
 	if ((ev->type==ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_SPACE)) {
